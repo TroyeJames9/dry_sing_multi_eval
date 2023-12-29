@@ -81,9 +81,9 @@ class RequestApi(object):
 
         response = requests.post(
             url=lfasr_host +
-            api_upload +
-            "?" +
-            urllib.parse.urlencode(param_dict),
+                api_upload +
+                "?" +
+                urllib.parse.urlencode(param_dict),
             headers={
                 "Content-type": "application/json"},
             data=data)
@@ -109,9 +109,9 @@ class RequestApi(object):
         while status == 3:
             response = requests.post(
                 url=lfasr_host +
-                api_get_result +
-                "?" +
-                urllib.parse.urlencode(param_dict),
+                    api_get_result +
+                    "?" +
+                    urllib.parse.urlencode(param_dict),
                 headers={
                     "Content-type": "application/json"})
             # print("get_result_url:",response.request.url)
@@ -125,6 +125,7 @@ class RequestApi(object):
         return result
 
 
+# 定义downloadOrderResul方法：规范音频文件名，若音频文件未下载好，则会连接api后下载音频文件并转为JSON本地文件
 def downloadOrderResult(
         appid=LFASR_APP_ID,
         secret_key=LFASR_SECRETKEY,
@@ -133,23 +134,30 @@ def downloadOrderResult(
         output_file_name='orderResult.json'
 ):
     file_name = os.path.basename(upload_file_path)
+    # 通过正则表达规范所获取歌曲的名字，获取第一个"."之前的内容
     real_file_name = re.search(r"^(.*?)\.", file_name).group(1)
     new_output_file_name = real_file_name + '_' + output_file_name
+    # 将下载目录路径和新的输出文件名拼接，生成完整的json结果下载路径
     download_path = download_dir / new_output_file_name
+    # 判断音频的json文件是否已经存在，已存在则不执行下载操作
     if not os.path.exists(download_path):
         print(f"Start download '{download_path}' ...")
+        # 检查下载目录是否存在，如果不存在则创建该目录
         if not os.path.exists(download_dir):
             os.makedirs(download_dir)
             print(f"Path '{download_dir}' created.")
         else:
             print(f"Path '{download_dir}' already exists.")
+        # 使用提供的应用程序ID、密钥和上传文件路径初始化
         api = RequestApi(appid=appid,
                          secret_key=secret_key,
                          upload_file_path=upload_file_path)
         transfer_result = api.get_result()
+        # 获取transfer_result结果中content下orderResult的字符串内容
         orderResult_str = transfer_result['content']['orderResult']
         orderResult_json = json.loads(orderResult_str)
         lattice_json = orderResult_json["lattice"]
+        # 将下载后的JSON文件保存到本地
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(lattice_json, json_file, indent=2, ensure_ascii=False)
         print(f"File '{download_path}' created!")
@@ -160,19 +168,25 @@ def downloadOrderResult(
     return lattice_json
 
 
+# gbkXfrFstLetter方法：用于将给定的GBK编码字符串转换为拼音首字母
 def gbkXfrFstLetter(gbk_str, style=Style.FIRST_LETTER):
+    # style参数指定了转换的风格，即只返回拼音的首字母
     pinyin_list = pinyin(gbk_str, style=style)
+    # 将拼音列表中的拼音首字母连接成一个字符串
     pinyin_result = ''.join(''.join(inner_list) for inner_list in pinyin_list)
+    # 用正则表达式去除字符串中的非字母字符，只保留字母部分
     reg_pinyin_result = re.sub(r'[^a-z]', '', pinyin_result)
     return reg_pinyin_result
 
 
+# extraValues方法：用于从给定的数据中提取特定键（"w"键）的值，并根据需要将中文转换为拼音首字母
 def extractValues(
         data,
         is_pinyin=False,
         is_cut_point=False,
         style=Style.FIRST_LETTER):
     w_values = []
+    # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
         for item in data:
             w_values.extend(
@@ -181,6 +195,7 @@ def extractValues(
                     is_pinyin,
                     is_cut_point,
                     style))
+    # 如果data是一个字典，遍历字典中的每个键值对
     elif isinstance(data, dict):
         for key, value in data.items():
             if key == "wb":
@@ -203,12 +218,14 @@ def extractValues(
     return w_values
 
 
+# getTransferResult方法：从给定的JSON文件中获取转写结果，并根据需要将中文转换为拼音首字母
 def getTransferResult(
         transfer_json,
         is_pinyin=False,
         is_cut_point=False,
         style=Style.FIRST_LETTER):
     w_list = []
+    # 解析元素中的JSON字符串，获取转写结果,从转写结果中提取值，调用extractValues函数，并将返回的值合并为一个字符串
     for element in transfer_json:
         sentence = json.loads(element["json_1best"])
         w_values = extractValues(
@@ -247,7 +264,7 @@ def findSubstringIndex(full_str, match_str, threshold=0.6):
         substring = full_str[i:i + len_match_str]
         match_percentage = sum(
             1 for x,
-            y in zip(
+                  y in zip(
                 substring,
                 match_str) if x == y) / len_match_str
         if match_percentage >= threshold:
