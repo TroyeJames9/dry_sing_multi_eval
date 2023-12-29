@@ -286,6 +286,8 @@ def getCutPoint(file_name='song_demo.txt', w_str_result=None, match_str_size=20)
     return cut_point_index
 
 
+
+
 if __name__ == '__main__':
     result_json = downloadOrderResult()
     w_str_result = getTransferResult(result_json, is_pinyin=True)
