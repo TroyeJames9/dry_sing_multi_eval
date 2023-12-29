@@ -129,7 +129,7 @@ class RequestApi(object):
 def downloadOrderResult(
         appid=LFASR_APP_ID,
         secret_key=LFASR_SECRETKEY,
-        upload_file_path=r"audio/song_demo.mp3",
+        upload_file_path=ROOT / "audio/song_demo.mp3",
         download_dir=ROOT / 'resultJson',
         output_file_name='orderResult.json'
 ):
@@ -208,7 +208,6 @@ def extractValues(
                         data=value,
                         is_pinyin=is_pinyin,
                         style=style))
-
     return w_values
 
 
@@ -275,7 +274,38 @@ def getCutPoint(file_name='song_demo.txt', w_str_result=None, match_str_size=20)
     return cut_point_index
 
 
+def FindWbValue(sentence, current_index, target_index):
+    ws_list = sentence["rt"][0]["ws"]
+    for word in ws_list:
+        wb_value = word["wb"] * 10
+        cw_list = word["cw"][0]
+        if cw_list["wp"] == 'n':
+            w_value = gbkXfrFstLetter(word["cw"][0]["w"])
+        else:
+            w_value = ''
+        current_index += len(w_value)
+        if current_index >= target_index + 1:
+            break
+    return current_index, wb_value
+
+
+def getCpTimestamp(
+        transfer_json,
+        target_index
+        ):
+    current_index = 0
+    for element in transfer_json:
+        json_best = json.loads(element["json_1best"])
+        current_index, wb_values = FindWbValue(sentence=json_best["st"], current_index=current_index, target_index=target_index)
+        if current_index >= target_index + 1:
+            cut_point_t = int(json_best["st"]["bg"]) + wb_values
+            break
+    return cut_point_t/1000
+
+
 if __name__ == '__main__':
     result_json = downloadOrderResult()
     w_str_result = getTransferResult(result_json, is_pinyin=True)
-    print(getCutPoint(w_str_result=w_str_result))
+    cut_point = getCutPoint(w_str_result=w_str_result)
+    print(cut_point)
+    print(getCpTimestamp(result_json, cut_point))
