@@ -9,6 +9,7 @@ import requests
 import urllib
 import sys
 import re
+from pydub import AudioSegment
 from pathlib import Path
 from pypinyin import pinyin, lazy_pinyin, Style
 
@@ -131,8 +132,7 @@ def downloadOrderResult(
         secret_key=LFASR_SECRETKEY,
         upload_file_path=ROOT / "audio/song_demo.mp3",
         download_dir=ROOT / 'resultJson',
-        output_file_name='orderResult.json'
-):
+        output_file_name='orderResult.json'):
     file_name = os.path.basename(upload_file_path)
     # 通过正则表达规范所获取歌曲的名字，获取第一个"."之前的内容
     real_file_name = re.search(r"^(.*?)\.", file_name).group(1)
@@ -163,8 +163,8 @@ def downloadOrderResult(
         print(f"File '{download_path}' created!")
     else:
         print(f"File '{download_path}' already exists!Download is close...")
-        with open(download_path, 'r', encoding='gbk') as file:
-            lattice_json = json.load(file)
+    with open(download_path, 'r', encoding='gbk') as file:
+        lattice_json = json.load(file)
     return lattice_json
 
 
@@ -180,10 +180,7 @@ def gbkXfrFstLetter(gbk_str, style=Style.FIRST_LETTER):
 
 
 # extraValues方法：用于从给定的数据中提取特定键（"w"键）的值，并根据需要将中文转换为拼音首字母
-def extractValues(
-        data,
-        is_pinyin=False,
-        style=Style.FIRST_LETTER):
+def extractValues(data, is_pinyin=False, style=Style.FIRST_LETTER):
     w_values = []
     # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
@@ -229,8 +226,7 @@ def getTransferResult(
     transfer_result = "".join(w_list)
     print(
         '\n the transfer result is：\n',
-        transfer_result,
-        '\n')
+        transfer_result)
     return transfer_result
 
 
@@ -249,7 +245,7 @@ def extractLyrics(
     return lyrics
 
 
-def findSubstringIndex(full_str, match_str, threshold=0.6):
+def findSubstringIndex(full_str, match_str, threshold=0.6, is_end=False):
     len_match_str = len(match_str)
     for i in range(len(full_str) - len_match_str + 1):
         substring = full_str[i:i + len_match_str]
@@ -259,27 +255,42 @@ def findSubstringIndex(full_str, match_str, threshold=0.6):
                 substring,
                 match_str) if x == y) / len_match_str
         if match_percentage >= threshold:
-            return i
+            if is_end:
+                return i + len_match_str - 1
+            else:
+                return i
     raise ValueError(
         f"Failed to match the head index of string {'match_str'}, please try again")
 
 
-def getCutPoint(file_name='song_demo.txt', w_str_result=None, match_str_size=20):
+def getCutPoint(w_str_result, file_name='song_demo.txt', match_str_size=20):
     lyrics = extractLyrics(
         file_name=file_name,
         is_pinyin=True,
         style=Style.FIRST_LETTER)
-    match_str = lyrics[:match_str_size]
-    cut_point_index = findSubstringIndex(w_str_result, match_str)
-    return cut_point_index
+    match_start_str = lyrics[:match_str_size]
+    match_end_str = lyrics[-1 * match_str_size:]
+    start_cut_point_index = findSubstringIndex(
+        w_str_result, match_start_str, is_end=False)
+    end_cut_point_index = findSubstringIndex(
+        w_str_result, match_end_str, is_end=True)
+    print(
+        "start_cut_point_index is",
+        start_cut_point_index,
+        ",end_cut_point_index is",
+        end_cut_point_index)
+    return start_cut_point_index, end_cut_point_index
 
 
-def FindWbValue(sentence, current_index, target_index):
+def findWbValue(sentence, current_index, target_index, is_end=False):
     ws_list = sentence["rt"][0]["ws"]
     for word in ws_list:
-        wb_value = word["wb"] * 10
+        if is_end:
+            wb_value = word["we"] * 10
+        else:
+            wb_value = word["wb"] * 10
         cw_list = word["cw"][0]
-        if cw_list["wp"] == 'n':
+        if cw_list["wp"] in ['n', 's']:
             w_value = gbkXfrFstLetter(word["cw"][0]["w"])
         else:
             w_value = ''
@@ -289,23 +300,54 @@ def FindWbValue(sentence, current_index, target_index):
     return current_index, wb_value
 
 
-def getCpTimestamp(
-        transfer_json,
-        target_index
-        ):
+def getCpTimestamp(transfer_json, target_index, is_end=False):
     current_index = 0
     for element in transfer_json:
         json_best = json.loads(element["json_1best"])
-        current_index, wb_values = FindWbValue(sentence=json_best["st"], current_index=current_index, target_index=target_index)
+        current_index, wb_values = findWbValue(
+            sentence=json_best["st"], current_index=current_index, target_index=target_index, is_end=is_end)
         if current_index >= target_index + 1:
             cut_point_t = int(json_best["st"]["bg"]) + wb_values
             break
-    return cut_point_t/1000
+    return cut_point_t / 1000
+
+
+def cut_audio(
+        start_time=0,
+        end_time=None,
+        output_dir=ROOT / "resultAudio",
+        output_audio="song_demo_seg.mp3",
+        input_audio=ROOT / "audio/song_demo.mp3"):
+    output_path = output_dir / output_audio
+    print(f"Start download '{output_path}' ...")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    audio = AudioSegment.from_file(input_audio)
+    duration_s = len(audio) / 1000
+    if end_time is None:
+        end_time = duration_s
+    segment = audio[start_time * 1000:end_time * 1000]
+    segment.export(output_path, format="mp3")
+
+
+def run():
+    result_json = downloadOrderResult()
+    w_str_result = getTransferResult(result_json, is_pinyin=True)
+    start_cut_point, end_cut_point = getCutPoint(w_str_result=w_str_result)
+    s_cut_point_t = getCpTimestamp(
+        result_json,
+        start_cut_point,
+        is_end=False) - 0.2
+    e_cut_point_t = getCpTimestamp(
+        result_json,
+        end_cut_point,
+        is_end=True) + 0.2
+    print(
+        "start time is", round(s_cut_point_t, 1),
+        "s,end_time is", round(e_cut_point_t, 1), "s")
+    cut_audio(start_time=s_cut_point_t, end_time=e_cut_point_t)
 
 
 if __name__ == '__main__':
-    result_json = downloadOrderResult()
-    w_str_result = getTransferResult(result_json, is_pinyin=True)
-    cut_point = getCutPoint(w_str_result=w_str_result)
-    print(cut_point)
-    print(getCpTimestamp(result_json, cut_point))
+    run()
