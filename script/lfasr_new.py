@@ -183,10 +183,7 @@ def gbkXfrFstLetter(gbk_str, style=Style.FIRST_LETTER):
 def extractValues(
         data,
         is_pinyin=False,
-        is_cut_point=False,
-        style=Style.FIRST_LETTER,
-        accum_length=None
-):
+        style=Style.FIRST_LETTER):
     w_values = []
     # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
@@ -195,17 +192,11 @@ def extractValues(
                 extractValues(
                     data=item,
                     is_pinyin=is_pinyin,
-                    is_cut_point=is_cut_point,
-                    style=style,
-                    accum_length=accum_length))
+                    style=style))
     # 如果data是一个字典，遍历字典中的每个键值对
     elif isinstance(data, dict):
         for key, value in data.items():
-            if key == "wb":
-                if is_cut_point:
-                    wb_values = value
-
-            elif key == "w":
+            if key == "w":
                 # 是否将中文转成拼音首字母，结果用于音频切割
                 if is_pinyin:
                     w_values.append(gbkXfrFstLetter(value))
@@ -216,9 +207,7 @@ def extractValues(
                     extractValues(
                         data=value,
                         is_pinyin=is_pinyin,
-                        is_cut_point=is_cut_point,
-                        style=style,
-                        accum_length=accum_length))
+                        style=style))
 
     return w_values
 
