@@ -184,23 +184,27 @@ def extractValues(
         data,
         is_pinyin=False,
         is_cut_point=False,
-        style=Style.FIRST_LETTER):
+        style=Style.FIRST_LETTER,
+        accum_length=None
+):
     w_values = []
     # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
         for item in data:
             w_values.extend(
                 extractValues(
-                    item,
-                    is_pinyin,
-                    is_cut_point,
-                    style))
+                    data=item,
+                    is_pinyin=is_pinyin,
+                    is_cut_point=is_cut_point,
+                    style=style,
+                    accum_length=accum_length))
     # 如果data是一个字典，遍历字典中的每个键值对
     elif isinstance(data, dict):
         for key, value in data.items():
             if key == "wb":
                 if is_cut_point:
                     wb_values = value
+
             elif key == "w":
                 # 是否将中文转成拼音首字母，结果用于音频切割
                 if is_pinyin:
@@ -210,10 +214,11 @@ def extractValues(
             else:
                 w_values.extend(
                     extractValues(
-                        value,
-                        is_pinyin,
-                        is_cut_point,
-                        style))
+                        data=value,
+                        is_pinyin=is_pinyin,
+                        is_cut_point=is_cut_point,
+                        style=style,
+                        accum_length=accum_length))
 
     return w_values
 
@@ -222,7 +227,6 @@ def extractValues(
 def getTransferResult(
         transfer_json,
         is_pinyin=False,
-        is_cut_point=False,
         style=Style.FIRST_LETTER):
     w_list = []
     # 解析元素中的JSON字符串，获取转写结果,从转写结果中提取值，调用extractValues函数，并将返回的值合并为一个字符串
@@ -231,7 +235,6 @@ def getTransferResult(
         w_values = extractValues(
             sentence,
             is_pinyin=is_pinyin,
-            is_cut_point=is_cut_point,
             style=style)
         concatenated_string = "".join(w_values)
         w_list.append(concatenated_string)
@@ -273,7 +276,7 @@ def findSubstringIndex(full_str, match_str, threshold=0.6):
         f"Failed to match the head index of string {'match_str'}, please try again")
 
 
-def getCutPoint(file_name, w_str_result, match_str_size=20):
+def getCutPoint(file_name='song_demo.txt', w_str_result=None, match_str_size=20):
     lyrics = extractLyrics(
         file_name=file_name,
         is_pinyin=True,
@@ -286,4 +289,4 @@ def getCutPoint(file_name, w_str_result, match_str_size=20):
 if __name__ == '__main__':
     result_json = downloadOrderResult()
     w_str_result = getTransferResult(result_json, is_pinyin=True)
-    print(getCutPoint('song_demo.txt', w_str_result))
+    print(getCutPoint(w_str_result=w_str_result))
