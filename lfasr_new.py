@@ -81,9 +81,9 @@ class RequestApi(object):
 
         response = requests.post(
             url=lfasr_host +
-                api_upload +
-                "?" +
-                urllib.parse.urlencode(param_dict),
+            api_upload +
+            "?" +
+            urllib.parse.urlencode(param_dict),
             headers={
                 "Content-type": "application/json"},
             data=data)
@@ -109,9 +109,9 @@ class RequestApi(object):
         while status == 3:
             response = requests.post(
                 url=lfasr_host +
-                    api_get_result +
-                    "?" +
-                    urllib.parse.urlencode(param_dict),
+                api_get_result +
+                "?" +
+                urllib.parse.urlencode(param_dict),
                 headers={
                     "Content-type": "application/json"})
             # print("get_result_url:",response.request.url)
@@ -264,7 +264,7 @@ def findSubstringIndex(full_str, match_str, threshold=0.6):
         substring = full_str[i:i + len_match_str]
         match_percentage = sum(
             1 for x,
-                  y in zip(
+            y in zip(
                 substring,
                 match_str) if x == y) / len_match_str
         if match_percentage >= threshold:
