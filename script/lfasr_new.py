@@ -129,7 +129,7 @@ class RequestApi(object):
 def downloadOrderResult(
         appid=LFASR_APP_ID,
         secret_key=LFASR_SECRETKEY,
-        upload_file_path=r"audio/song_demo.mp3",
+        upload_file_path=ROOT / "audio/song_demo.mp3",
         download_dir=ROOT / 'resultJson',
         output_file_name='orderResult.json'
 ):
@@ -183,10 +183,7 @@ def gbkXfrFstLetter(gbk_str, style=Style.FIRST_LETTER):
 def extractValues(
         data,
         is_pinyin=False,
-        is_cut_point=False,
-        style=Style.FIRST_LETTER,
-        accum_length=None
-):
+        style=Style.FIRST_LETTER):
     w_values = []
     # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
@@ -195,17 +192,11 @@ def extractValues(
                 extractValues(
                     data=item,
                     is_pinyin=is_pinyin,
-                    is_cut_point=is_cut_point,
-                    style=style,
-                    accum_length=accum_length))
+                    style=style))
     # 如果data是一个字典，遍历字典中的每个键值对
     elif isinstance(data, dict):
         for key, value in data.items():
-            if key == "wb":
-                if is_cut_point:
-                    wb_values = value
-
-            elif key == "w":
+            if key == "w":
                 # 是否将中文转成拼音首字母，结果用于音频切割
                 if is_pinyin:
                     w_values.append(gbkXfrFstLetter(value))
@@ -216,10 +207,7 @@ def extractValues(
                     extractValues(
                         data=value,
                         is_pinyin=is_pinyin,
-                        is_cut_point=is_cut_point,
-                        style=style,
-                        accum_length=accum_length))
-
+                        style=style))
     return w_values
 
 
@@ -286,9 +274,38 @@ def getCutPoint(file_name='song_demo.txt', w_str_result=None, match_str_size=20)
     return cut_point_index
 
 
+def FindWbValue(sentence, current_index, target_index):
+    ws_list = sentence["rt"][0]["ws"]
+    for word in ws_list:
+        wb_value = word["wb"] * 10
+        cw_list = word["cw"][0]
+        if cw_list["wp"] == 'n':
+            w_value = gbkXfrFstLetter(word["cw"][0]["w"])
+        else:
+            w_value = ''
+        current_index += len(w_value)
+        if current_index >= target_index + 1:
+            break
+    return current_index, wb_value
+
+
+def getCpTimestamp(
+        transfer_json,
+        target_index
+        ):
+    current_index = 0
+    for element in transfer_json:
+        json_best = json.loads(element["json_1best"])
+        current_index, wb_values = FindWbValue(sentence=json_best["st"], current_index=current_index, target_index=target_index)
+        if current_index >= target_index + 1:
+            cut_point_t = int(json_best["st"]["bg"]) + wb_values
+            break
+    return cut_point_t/1000
 
 
 if __name__ == '__main__':
     result_json = downloadOrderResult()
     w_str_result = getTransferResult(result_json, is_pinyin=True)
-    print(getCutPoint(w_str_result=w_str_result))
+    cut_point = getCutPoint(w_str_result=w_str_result)
+    print(cut_point)
+    print(getCpTimestamp(result_json, cut_point))
