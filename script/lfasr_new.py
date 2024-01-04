@@ -82,9 +82,9 @@ class RequestApi(object):
 
         response = requests.post(
             url=lfasr_host +
-            api_upload +
-            "?" +
-            urllib.parse.urlencode(param_dict),
+                api_upload +
+                "?" +
+                urllib.parse.urlencode(param_dict),
             headers={
                 "Content-type": "application/json"},
             data=data)
@@ -110,9 +110,9 @@ class RequestApi(object):
         while status == 3:
             response = requests.post(
                 url=lfasr_host +
-                api_get_result +
-                "?" +
-                urllib.parse.urlencode(param_dict),
+                    api_get_result +
+                    "?" +
+                    urllib.parse.urlencode(param_dict),
                 headers={
                     "Content-type": "application/json"})
             # print("get_result_url:",response.request.url)
@@ -251,7 +251,7 @@ def findSubstringIndex(full_str, match_str, threshold=0.6, is_end=False):
         substring = full_str[i:i + len_match_str]
         match_percentage = sum(
             1 for x,
-            y in zip(
+                  y in zip(
                 substring,
                 match_str) if x == y) / len_match_str
         if match_percentage >= threshold:
@@ -329,6 +329,39 @@ def cut_audio(
         end_time = duration_s
     segment = audio[start_time * 1000:end_time * 1000]
     segment.export(output_path, format="mp3")
+
+
+def CQT_plot(audio_folder=ROOT / "audio/qilai", output_folder=ROOT / 'resultPictures/CQT图像'):
+    # 创建输出文件夹（如果不存在）
+    os.makedirs(output_folder, exist_ok=True)
+
+    # 获取音频文件夹中的所有文件夹名
+    subfolders = os.listdir(audio_folder)
+    print(subfolders)
+    # 循环处理每个音频文件夹
+    for subfolder in subfolders:
+        audio_path = os.path.join(audio_folder, subfolder)
+
+        # 使用Librosa加载音频
+        y, sr = librosa.load(audio_path)
+
+        # 生成CQT图
+        C = librosa.amplitude_to_db(np.abs(librosa.cqt(y, sr=sr)), ref=np.max)
+
+        # 创建输出图像文件名
+        output_filename = os.path.splitext(subfolder)[0] + '.png'
+        output_path = os.path.join(output_folder, output_filename)
+
+        # 保存CQT图为图像文件
+        plt.figure(figsize=(8, 8))
+        plt.axis('off')
+        plt.imshow(C, cmap='viridis', origin='lower', aspect='auto')
+        plt.savefig(output_path, bbox_inches='tight', pad_inches=0, transparent=False)
+        plt.close()
+
+        print(f'Converted {subfolder} to {output_filename}')
+
+    print('Conversion complete.')
 
 
 def run():
