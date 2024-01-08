@@ -331,11 +331,29 @@ def cut_audio(
     segment.export(output_path, format="mp3")
 
 
-def CQT_plot(audio_folder=ROOT / "audio/qilai", output_folder=ROOT / 'resultPictures/CQT图像'):
-    # 创建输出文件夹（如果不存在）
-    os.makedirs(output_folder, exist_ok=True)
+# audio_folder为音频文件夹路径，output_folder为输出CQT图像的文件夹路径
+def resultPictueres(audio_folder=ROOT / "audio/qilai", output_folder=ROOT / 'resultPictures/CQT图'):
+    picture = ["CQT图", "Waveform 波形图", "Spectrogram 谱像", "Mel Spectrogram 梅尔频谱图",
+               "Frequency-Time Plot 频率-时间图", "Spectral Envelope 光谱包络图"]
+    download_dir = ROOT / 'resultPictures'
 
-    # 获取音频文件夹中的所有文件夹名
+    # 判断存储图片结果的文件夹resultPictueres是否已经存在，若已存在则不执行下载操作
+
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+        print(f"Path '{download_dir}' created.")
+    else:
+        print(f"Path '{download_dir}' already exists.")
+
+    # 创建一个字典，将每个元素与下载目录拼接成新路径
+    new_download_dir = {name: download_dir / name for name in picture}
+
+    # 创建文件夹
+    for name, path in new_download_dir.items():
+        # 检查下载目录是否存在，如果不存在则创建该目录
+        os.makedirs(path, exist_ok=True)
+
+        # 获取音频文件夹中的所有文件夹名
     subfolders = os.listdir(audio_folder)
     print(subfolders)
     # 循环处理每个音频文件夹
@@ -362,7 +380,6 @@ def CQT_plot(audio_folder=ROOT / "audio/qilai", output_folder=ROOT / 'resultPict
         print(f'Converted {subfolder} to {output_filename}')
 
     print('Conversion complete.')
-
 
 def run():
     result_json = downloadOrderResult()
