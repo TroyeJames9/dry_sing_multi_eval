@@ -2,7 +2,7 @@
 import os
 import sys
 from pathlib import Path
-from lfasr_new import downloadOrderResult, getTransferResult, getCutPoint, getCpTimestamp, cut_audio
+from lfasr_new import downloadOrderResult, getTransferResult, getCutPoint, getCpTimestamp, cutAudio
 
 
 # 在pycharm的用户环境变量配置好科大讯飞的APP_ID和secretkey
@@ -51,12 +51,12 @@ def extractLyricsPart(
     print(
         "start time is", round(s_cut_point_t, 1),
         "s,end_time is", round(e_cut_point_t, 1), "s")
-    cut_audio(
+    cutAudio(
         start_time=s_cut_point_t,
         end_time=e_cut_point_t,
-        input_audio=upload_file_path,
         output_dir=audio_dir,
-        output_audio=output_audio_name)
+        output_audio=output_audio_name,
+        input_audio=upload_file_path)
 
 
 def run():

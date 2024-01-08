@@ -315,7 +315,7 @@ def getCpTimestamp(transfer_json, target_index, is_end=False):
     return cut_point_t / 1000
 
 
-def cut_audio(
+def cutAudio(
         start_time=0,
         end_time=None,
         output_dir=ROOT / "resultAudio",
