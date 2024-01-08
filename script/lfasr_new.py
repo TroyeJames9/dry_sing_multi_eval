@@ -67,6 +67,7 @@ class RequestApi(object):
         param_dict["fileName"] = file_name
         param_dict["duration"] = "200"
         param_dict["language"] = "cn"
+        param_dict["hotWord"] = "起来|不愿做奴隶的人们|把我们的血肉|筑成我们新的长城|冒着敌人的炮火|前进|进"
         """
         以下为部分额外可选的传入参数，可根据需要以此形式添加参数
         可选参数详见https://www.xfyun.cn/doc/asr/ifasr_new/API.html
@@ -82,9 +83,9 @@ class RequestApi(object):
 
         response = requests.post(
             url=lfasr_host +
-                api_upload +
-                "?" +
-                urllib.parse.urlencode(param_dict),
+            api_upload +
+            "?" +
+            urllib.parse.urlencode(param_dict),
             headers={
                 "Content-type": "application/json"},
             data=data)
@@ -110,9 +111,9 @@ class RequestApi(object):
         while status == 3:
             response = requests.post(
                 url=lfasr_host +
-                    api_get_result +
-                    "?" +
-                    urllib.parse.urlencode(param_dict),
+                api_get_result +
+                "?" +
+                urllib.parse.urlencode(param_dict),
                 headers={
                     "Content-type": "application/json"})
             # print("get_result_url:",response.request.url)
@@ -169,58 +170,49 @@ def downloadOrderResult(
 
 
 # gbkXfrFstLetter方法：用于将给定的GBK编码字符串转换为拼音首字母
-def gbkXfrFstLetter(gbk_str, style=Style.FIRST_LETTER):
+def gbkXfrFstLetter(gbk_str, style):
+    pinyin_list = ''
     # style参数指定了转换的风格，即只返回拼音的首字母
-    pinyin_list = pinyin(gbk_str, style=style)
-    # 将拼音列表中的拼音首字母连接成一个字符串
+    if style == 0:
+        return gbk_str
+    elif style == 1:
+        pinyin_list = lazy_pinyin(gbk_str)
+    elif style == 2:
+        pinyin_list = pinyin(gbk_str, style=Style.FIRST_LETTER)
     pinyin_result = ''.join(''.join(inner_list) for inner_list in pinyin_list)
-    # 用正则表达式去除字符串中的非字母字符，只保留字母部分
     reg_pinyin_result = re.sub(r'[^a-z]', '', pinyin_result)
     return reg_pinyin_result
 
 
 # extraValues方法：用于从给定的数据中提取特定键（"w"键）的值，并根据需要将中文转换为拼音首字母
-def extractValues(data, is_pinyin=False, style=Style.FIRST_LETTER):
+def extractValues(data, style=2):
     w_values = []
     # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
         for item in data:
             w_values.extend(
-                extractValues(
-                    data=item,
-                    is_pinyin=is_pinyin,
-                    style=style))
+                extractValues(data=item, style=style))
     # 如果data是一个字典，遍历字典中的每个键值对
     elif isinstance(data, dict):
         for key, value in data.items():
             if key == "w":
                 # 是否将中文转成拼音首字母，结果用于音频切割
-                if is_pinyin:
-                    w_values.append(gbkXfrFstLetter(value))
-                else:
-                    w_values.append(value)
+                w_values.append(gbkXfrFstLetter(value, style=style))
             else:
                 w_values.extend(
-                    extractValues(
-                        data=value,
-                        is_pinyin=is_pinyin,
-                        style=style))
+                    extractValues(data=value, style=style))
     return w_values
 
 
 # getTransferResult方法：从给定的JSON文件中获取转写结果，并根据需要将中文转换为拼音首字母
 def getTransferResult(
         transfer_json,
-        is_pinyin=False,
-        style=Style.FIRST_LETTER):
+        style=2):
     w_list = []
     # 解析元素中的JSON字符串，获取转写结果,从转写结果中提取值，调用extractValues函数，并将返回的值合并为一个字符串
     for element in transfer_json:
         sentence = json.loads(element["json_1best"])
-        w_values = extractValues(
-            sentence,
-            is_pinyin=is_pinyin,
-            style=style)
+        w_values = extractValues(sentence, style=style)
         concatenated_string = "".join(w_values)
         w_list.append(concatenated_string)
     transfer_result = "".join(w_list)
@@ -233,30 +225,38 @@ def getTransferResult(
 def extractLyrics(
         lyrics_dir='lyrics',
         file_name='song_demo.txt',
-        is_pinyin=False,
-        style=Style.FIRST_LETTER):
+        style=2):
     lyrics_path = ROOT / lyrics_dir / file_name
     with open(lyrics_path, 'r', encoding='utf-8') as file:
         raw_lyrics = file.read()
     pattern = re.compile(r'[^\u4e00-\u9fa5]')
     lyrics = re.sub(pattern, '', raw_lyrics)
-    if is_pinyin:
-        lyrics = gbkXfrFstLetter(lyrics, style=style)
+    lyrics = gbkXfrFstLetter(lyrics, style=style)
     return lyrics
 
 
-def findSubstringIndex(full_str, match_str, threshold=0.6, is_end=False):
-    len_match_str = len(match_str)
-    for i in range(len(full_str) - len_match_str + 1):
-        substring = full_str[i:i + len_match_str]
+def findSubstringIndex(
+        full_str,
+        lyrics,
+        threshold=0.6,
+        is_end=False,
+        match_str_size=20):
+    if is_end:
+        match_str = lyrics[-1 * match_str_size:]
+        range_list = reversed(range(len(full_str) - match_str_size + 1))
+    else:
+        match_str = lyrics[:match_str_size]
+        range_list = range(len(full_str) - match_str_size + 1)
+    for i in range_list:
+        substring = full_str[i:i + match_str_size]
         match_percentage = sum(
             1 for x,
-                  y in zip(
+            y in zip(
                 substring,
-                match_str) if x == y) / len_match_str
+                match_str) if x == y) / match_str_size
         if match_percentage >= threshold:
             if is_end:
-                return i + len_match_str - 1
+                return i + match_str_size - 1
             else:
                 return i
     raise ValueError(
@@ -266,14 +266,17 @@ def findSubstringIndex(full_str, match_str, threshold=0.6, is_end=False):
 def getCutPoint(w_str_result, file_name='song_demo.txt', match_str_size=20):
     lyrics = extractLyrics(
         file_name=file_name,
-        is_pinyin=True,
-        style=Style.FIRST_LETTER)
-    match_start_str = lyrics[:match_str_size]
-    match_end_str = lyrics[-1 * match_str_size:]
+        style=2)
     start_cut_point_index = findSubstringIndex(
-        w_str_result, match_start_str, is_end=False)
+        w_str_result,
+        is_end=False,
+        lyrics=lyrics,
+        match_str_size=match_str_size)
     end_cut_point_index = findSubstringIndex(
-        w_str_result, match_end_str, is_end=True)
+        w_str_result,
+        is_end=True,
+        lyrics=lyrics,
+        match_str_size=match_str_size)
     print(
         "start_cut_point_index is",
         start_cut_point_index,
@@ -291,7 +294,7 @@ def findWbValue(sentence, current_index, target_index, is_end=False):
             wb_value = word["wb"] * 10
         cw_list = word["cw"][0]
         if cw_list["wp"] in ['n', 's']:
-            w_value = gbkXfrFstLetter(word["cw"][0]["w"])
+            w_value = gbkXfrFstLetter(word["cw"][0]["w"], style=2)
         else:
             w_value = ''
         current_index += len(w_value)
@@ -329,75 +332,3 @@ def cut_audio(
         end_time = duration_s
     segment = audio[start_time * 1000:end_time * 1000]
     segment.export(output_path, format="mp3")
-
-
-# audio_folder为音频文件夹路径，output_folder为输出CQT图像的文件夹路径
-def resultPictueres(audio_folder=ROOT / "audio/qilai", output_folder=ROOT / 'resultPictures/CQT图'):
-    picture = ["CQT图", "Waveform 波形图", "Spectrogram 谱像", "Mel Spectrogram 梅尔频谱图",
-               "Frequency-Time Plot 频率-时间图", "Spectral Envelope 光谱包络图"]
-    download_dir = ROOT / 'resultPictures'
-
-    # 判断存储图片结果的文件夹resultPictueres是否已经存在，若已存在则不执行下载操作
-
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-        print(f"Path '{download_dir}' created.")
-    else:
-        print(f"Path '{download_dir}' already exists.")
-
-    # 创建一个字典，将每个元素与下载目录拼接成新路径
-    new_download_dir = {name: download_dir / name for name in picture}
-
-    # 创建文件夹
-    for name, path in new_download_dir.items():
-        # 检查下载目录是否存在，如果不存在则创建该目录
-        os.makedirs(path, exist_ok=True)
-
-        # 获取音频文件夹中的所有文件夹名
-    subfolders = os.listdir(audio_folder)
-    print(subfolders)
-    # 循环处理每个音频文件夹
-    for subfolder in subfolders:
-        audio_path = os.path.join(audio_folder, subfolder)
-
-        # 使用Librosa加载音频
-        y, sr = librosa.load(audio_path)
-
-        # 生成CQT图
-        C = librosa.amplitude_to_db(np.abs(librosa.cqt(y, sr=sr)), ref=np.max)
-
-        # 创建输出图像文件名
-        output_filename = os.path.splitext(subfolder)[0] + '.png'
-        output_path = os.path.join(output_folder, output_filename)
-
-        # 保存CQT图为图像文件
-        plt.figure(figsize=(8, 8))
-        plt.axis('off')
-        plt.imshow(C, cmap='viridis', origin='lower', aspect='auto')
-        plt.savefig(output_path, bbox_inches='tight', pad_inches=0, transparent=False)
-        plt.close()
-
-        print(f'Converted {subfolder} to {output_filename}')
-
-    print('Conversion complete.')
-
-def run():
-    result_json = downloadOrderResult()
-    w_str_result = getTransferResult(result_json, is_pinyin=True)
-    start_cut_point, end_cut_point = getCutPoint(w_str_result=w_str_result)
-    s_cut_point_t = getCpTimestamp(
-        result_json,
-        start_cut_point,
-        is_end=False) - 0.2
-    e_cut_point_t = getCpTimestamp(
-        result_json,
-        end_cut_point,
-        is_end=True) + 0.2
-    print(
-        "start time is", round(s_cut_point_t, 1),
-        "s,end_time is", round(e_cut_point_t, 1), "s")
-    cut_audio(start_time=s_cut_point_t, end_time=e_cut_point_t)
-
-
-if __name__ == '__main__':
-    run()
