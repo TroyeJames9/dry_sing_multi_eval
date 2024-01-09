@@ -10,18 +10,7 @@ import urllib
 import sys
 import re
 from pydub import AudioSegment
-from pathlib import Path
 from pypinyin import pinyin, lazy_pinyin, Style
-
-# 在pycharm的用户环境变量配置好科大讯飞的APP_ID和secretkey
-LFASR_APP_ID = os.getenv("LFASR_APP_ID")
-LFASR_SECRETKEY = os.getenv("LFASR_SECRETKEY")
-
-FILE = Path(__file__).resolve()
-ROOT = FILE.parents[1]  # program root directory
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))  # add ROOT to PATH
-ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 lfasr_host = 'https://raasr.xfyun.cn/v2/api'
 # 请求的接口名
@@ -30,12 +19,13 @@ api_get_result = '/getResult'
 
 
 class RequestApi(object):
-    def __init__(self, appid, secret_key, upload_file_path):
+    def __init__(self, appid, secret_key, upload_file_path, hotword):
         self.appid = appid
         self.secret_key = secret_key
         self.upload_file_path = upload_file_path
         self.ts = str(int(time.time()))
         self.signa = self.get_signa()
+        self.hotword = hotword
 
     def get_signa(self):
         appid = self.appid
@@ -67,7 +57,7 @@ class RequestApi(object):
         param_dict["fileName"] = file_name
         param_dict["duration"] = "200"
         param_dict["language"] = "cn"
-        param_dict["hotWord"] = "起来|不愿做奴隶的人们|把我们的血肉|筑成我们新的长城|冒着敌人的炮火|前进|进"
+        param_dict["hotWord"] = self.hotword
         """
         以下为部分额外可选的传入参数，可根据需要以此形式添加参数
         可选参数详见https://www.xfyun.cn/doc/asr/ifasr_new/API.html
@@ -123,17 +113,19 @@ class RequestApi(object):
             print("status=", status)
             if status == 4 and status == -1:
                 break
-            time.sleep(5)
+            time.sleep(1)
         return result
 
 
 # 定义downloadOrderResul方法：规范音频文件名，若音频文件未下载好，则会连接api后下载音频文件并转为JSON本地文件
 def downloadOrderResult(
-        appid=LFASR_APP_ID,
-        secret_key=LFASR_SECRETKEY,
-        upload_file_path=ROOT / "audio/song_demo.mp3",
-        download_dir=ROOT / 'resultJson',
-        output_file_name='orderResult.json'):
+        appid,
+        secret_key,
+        lyrics_dir,
+        lyrics_file_name,
+        upload_file_path,
+        download_dir,
+        output_file_name):
     file_name = os.path.basename(upload_file_path)
     # 通过正则表达规范所获取歌曲的名字，获取第一个"."之前的内容
     real_file_name = re.search(r"^(.*?)\.", file_name).group(1)
@@ -149,10 +141,12 @@ def downloadOrderResult(
             print(f"Path '{download_dir}' created.")
         else:
             print(f"Path '{download_dir}' already exists.")
+        hotword = getHotWords(lyrics_dir=lyrics_dir, file_name=lyrics_file_name)
         # 使用提供的应用程序ID、密钥和上传文件路径初始化
         api = RequestApi(appid=appid,
                          secret_key=secret_key,
-                         upload_file_path=upload_file_path)
+                         upload_file_path=upload_file_path,
+                         hotword=hotword)
         transfer_result = api.get_result()
         # 获取transfer_result结果中content下orderResult的字符串内容
         orderResult_str = transfer_result['content']['orderResult']
@@ -171,16 +165,17 @@ def downloadOrderResult(
 
 # gbkXfrFstLetter方法：用于将给定的GBK编码字符串转换为拼音首字母
 def gbkXfrFstLetter(gbk_str, style):
-    pinyin_list = ''
     # style参数指定了转换的风格，即只返回拼音的首字母
     if style == 0:
         return gbk_str
     elif style == 1:
         pinyin_list = lazy_pinyin(gbk_str)
-        pinyin_result = ' '.join(''.join(inner_list) for inner_list in pinyin_list)
+        pinyin_result = ' '.join(''.join(inner_list)
+                                 for inner_list in pinyin_list)
     elif style == 2:
         pinyin_list = pinyin(gbk_str, style=Style.FIRST_LETTER)
-        pinyin_result = ''.join(''.join(inner_list) for inner_list in pinyin_list)
+        pinyin_result = ''.join(''.join(inner_list)
+                                for inner_list in pinyin_list)
     reg_pinyin_result = re.sub(r'[^a-z\s]', '', pinyin_result)
     return reg_pinyin_result
 
@@ -206,9 +201,7 @@ def extractValues(data, style=2):
 
 
 # getTransferResult方法：从给定的JSON文件中获取转写结果，并根据需要将中文转换为拼音首字母
-def getTransferResult(
-        transfer_json,
-        style=2):
+def getTransferResult(transfer_json, style=2):
     w_list = []
     # 解析元素中的JSON字符串，获取转写结果,从转写结果中提取值，调用extractValues函数，并将返回的值合并为一个字符串
     for element in transfer_json:
@@ -223,17 +216,24 @@ def getTransferResult(
     return transfer_result
 
 
-def extractLyrics(
-        lyrics_dir='lyrics',
-        file_name='song_demo.txt',
-        style=2):
-    lyrics_path = ROOT / lyrics_dir / file_name
+def extractLyrics(lyrics_dir, file_name, style=2):
+    lyrics_path = lyrics_dir / file_name
     with open(lyrics_path, 'r', encoding='utf-8') as file:
         raw_lyrics = file.read()
     pattern = re.compile(r'[^\u4e00-\u9fa5]')
     lyrics = re.sub(pattern, '', raw_lyrics)
     lyrics = gbkXfrFstLetter(lyrics, style=style)
     return lyrics
+
+
+def getHotWords(lyrics_dir, file_name):
+    lyrics_path = lyrics_dir / file_name
+    with open(lyrics_path, 'r', encoding='utf-8') as file:
+        raw_lyrics = file.read()
+    pattern = re.compile(r'[^\u4e00-\u9fa5\n]+')
+    result = pattern.sub('', raw_lyrics).replace('\n', '|')
+    result = re.sub(r'\|+', '|', result)
+    return result
 
 
 def findSubstringIndex(
@@ -264,20 +264,29 @@ def findSubstringIndex(
         f"Failed to match the head index of string {'match_str'}, please try again")
 
 
-def getCutPoint(w_str_result, file_name='song_demo.txt', match_str_size=20):
+def getCutPoint(
+        lyrics_dir,
+        w_str_result,
+        file_name,
+        threshold,
+        match_str_size=20):
     lyrics = extractLyrics(
+        lyrics_dir=lyrics_dir,
         file_name=file_name,
         style=2)
     start_cut_point_index = findSubstringIndex(
         w_str_result,
         is_end=False,
         lyrics=lyrics,
-        match_str_size=match_str_size)
+        match_str_size=match_str_size,
+        threshold=threshold)
     end_cut_point_index = findSubstringIndex(
         w_str_result,
         is_end=True,
         lyrics=lyrics,
-        match_str_size=match_str_size)
+        match_str_size=match_str_size,
+        threshold=threshold)
+
     print(
         "start_cut_point_index is",
         start_cut_point_index,
@@ -319,10 +328,12 @@ def getCpTimestamp(transfer_json, target_index, is_end=False):
 def cutAudio(
         start_time=0,
         end_time=None,
-        output_dir=ROOT / "resultAudio",
-        output_audio="song_demo_seg.mp3",
-        input_audio=ROOT / "audio/song_demo.mp3"):
-    output_path = output_dir / output_audio
+        output_dir=None,
+        output_audio=None,
+        input_audio=None):
+    file_name = os.path.basename(input_audio)
+    output_name = file_name + '_' + output_audio
+    output_path = output_dir / output_name
     print(f"Start download '{output_path}' ...")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
