@@ -177,10 +177,11 @@ def gbkXfrFstLetter(gbk_str, style):
         return gbk_str
     elif style == 1:
         pinyin_list = lazy_pinyin(gbk_str)
+        pinyin_result = ' '.join(''.join(inner_list) for inner_list in pinyin_list)
     elif style == 2:
         pinyin_list = pinyin(gbk_str, style=Style.FIRST_LETTER)
-    pinyin_result = ''.join(''.join(inner_list) for inner_list in pinyin_list)
-    reg_pinyin_result = re.sub(r'[^a-z]', '', pinyin_result)
+        pinyin_result = ''.join(''.join(inner_list) for inner_list in pinyin_list)
+    reg_pinyin_result = re.sub(r'[^a-z\s]', '', pinyin_result)
     return reg_pinyin_result
 
 
@@ -315,7 +316,7 @@ def getCpTimestamp(transfer_json, target_index, is_end=False):
     return cut_point_t / 1000
 
 
-def cut_audio(
+def cutAudio(
         start_time=0,
         end_time=None,
         output_dir=ROOT / "resultAudio",
