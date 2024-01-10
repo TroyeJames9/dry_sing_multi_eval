@@ -122,7 +122,6 @@ def formGraph(audio_file):
     plt.show()
 
 
-
 def run():
     resultPictueres()
     CQT()
