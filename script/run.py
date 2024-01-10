@@ -10,7 +10,7 @@ import aiohttp
 from pathlib import Path
 from lfasr_new import downloadOrderResult, getTransferResult, getCutPoint, getCpTimestamp, cutAudio, extractLyrics, \
     gbkXfrFstLetter
-from articulation_analysis import calculate_cosine_similarity
+from articulation_analysis import calculate_cosine_similarity, kmeanCatogery
 
 # 在pycharm的用户环境变量配置好科大讯飞的APP_ID和secretkey
 LFASR_APP_ID = os.getenv("LFASR_APP_ID")
@@ -105,7 +105,7 @@ def calcCosineSimilarity(
     return similarity_score
 
 
-def loopExtractLyricsPartV1(audio_song_name):
+def loopArticulationAnalysisV1(audio_song_name):
     folder_path = UPLOAD_FILE_DIR / audio_song_name
     lyrics_file_name = audio_song_name + '.txt'
     mp3_files = glob.glob(os.path.join(folder_path, '*.mp3'))
@@ -114,7 +114,10 @@ def loopExtractLyricsPartV1(audio_song_name):
                                             lyrics_file_name=lyrics_file_name,
                                             is_cut=False)
         print(
-            calcCosineSimilarity(input_audio_str=lyrics_part_str, lyrics_file_name=lyrics_file_name, vectorizer_type=0))
+            calcCosineSimilarity(
+                input_audio_str=lyrics_part_str,
+                lyrics_file_name=lyrics_file_name,
+                vectorizer_type=0))
 
 
 async def asyncioExtractLyricsPart(upload_file_path, lyrics_file_name, is_cut, semaphore):
@@ -127,40 +130,67 @@ async def concurrentTask(upload_file_paths, lyrics_file_name, is_cut, max_concur
     semaphore = asyncio.Semaphore(max_concurrency)
 
     tasks = [
-        asyncioExtractLyricsPart(upload_file_path=upload_file_path, lyrics_file_name=lyrics_file_name, is_cut=is_cut,
-                                 semaphore=semaphore)
-        for upload_file_path in upload_file_paths
-    ]
+        asyncioExtractLyricsPart(
+            upload_file_path=upload_file_path,
+            lyrics_file_name=lyrics_file_name,
+            is_cut=is_cut,
+            semaphore=semaphore) for upload_file_path in upload_file_paths]
 
     results = await asyncio.gather(*tasks)
 
     return results
 
 
-def asyncExtractLyricsPartV2(audio_song_name):
+def asyncArticulationAnalysisV2(audio_song_name):
     folder_path = UPLOAD_FILE_DIR / audio_song_name
     lyrics_file_name = audio_song_name + '.txt'
     mp3_files = glob.glob(os.path.join(folder_path, '*.mp3'))
     loop = asyncio.get_event_loop()
     loop.run_until_complete(
-        concurrentTask(upload_file_paths=mp3_files, lyrics_file_name=lyrics_file_name, is_cut=False,
-                       max_concurrency=18))
+        concurrentTask(
+            upload_file_paths=mp3_files,
+            lyrics_file_name=lyrics_file_name,
+            is_cut=False,
+            max_concurrency=18))
 
 
-def threadExtractLyricsPartV3(audio_song_name):
+def threadProcess(
+        upload_file_path,
+        lyrics_file_name,
+        is_cut,
+        vectorizer_type=0):
+    lyrics_part_str = extractLyricsPart(upload_file_path=upload_file_path,
+                                        lyrics_file_name=lyrics_file_name,
+                                        is_cut=is_cut)
+    file_name = os.path.basename(upload_file_path)
+    cs_result = calcCosineSimilarity(
+        input_audio_str=lyrics_part_str,
+        lyrics_file_name=lyrics_file_name,
+        vectorizer_type=vectorizer_type)
+    return {file_name: cs_result}
+
+
+def threadArticulationAnalysisV3(audio_song_name):
     folder_path = UPLOAD_FILE_DIR / audio_song_name
     lyrics_file_name = audio_song_name + '.txt'
     mp3_files = glob.glob(os.path.join(folder_path, '*.mp3'))
     with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
-        # 使用map方法并发执行 downloadOrderResult 函数
+        # 使用map方法并发执行函数
         upload_file_paths = mp3_files
-        executor.map(lambda x: extractLyricsPart(lyrics_file_name=lyrics_file_name, is_cut=False, upload_file_path=x),
-                     upload_file_paths
-                     )
+        result_list = list(
+            executor.map(
+                lambda x: threadProcess(
+                    lyrics_file_name=lyrics_file_name,
+                    is_cut=False,
+                    upload_file_path=x),
+                upload_file_paths))
+    return result_list
 
 
 def run():
-    pass
+    score_dir_list = threadArticulationAnalysisV3('fenHongSeDeHuiYi')
+    labels = kmeanCatogery(score_dir_list=score_dir_list, cat_num=4)
+    return labels
 
 
 def test_loop_vs_multithread():
@@ -169,12 +199,20 @@ def test_loop_vs_multithread():
     end_time_V1 = time.time()
     input("请删除resultJson里由v1生成的json，删除完输入y")
     start_time_V3 = time.time()
-    threadExtractLyricsPartV3('fenHongSeDeHuiYi')
+    threadArticulationAnalysisV3('fenHongSeDeHuiYi')
     end_time_V3 = time.time()
-    print('v1 consume', end_time_V1 - start_time_V1, '\nv3 consume', end_time_V3 - start_time_V3)
+    print(
+        'v1 consume',
+        end_time_V1 -
+        start_time_V1,
+        '\nv3 consume',
+        end_time_V3 -
+        start_time_V3)
 
 
 if __name__ == '__main__':
-    threadExtractLyricsPartV3('fenHongSeDeHuiYi')
+    # loopExtractLyricsPartV1('fenHongSeDeHuiYi')
+    # print(threadExtractLyricsPartV3('fenHongSeDeHuiYi'))
     # test_loop_vs_multithread()
+    print(run())
     pass
