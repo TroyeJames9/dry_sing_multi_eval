@@ -5,6 +5,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+import jieba
+import math
 
 
 def calculate_cosine_similarity(text1, text2, vectorizer_type=0):
@@ -75,4 +77,3 @@ def calculate_cosine_jieba(text1, text2, cut_all=False):
         result = 0.0
 
     return result
-
