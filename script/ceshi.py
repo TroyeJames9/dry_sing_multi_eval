@@ -7,6 +7,7 @@ import os
 import librosa.display
 import numpy as np
 import aubio
+from articulation_analysis import calculate_cosine_similarity
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # program root directory
@@ -16,61 +17,9 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 # 读取音 频文件
 audio_file = ROOT / "audio/song_demo.mp3"  # 替换为你的音频文件路径
-audio_file_1 = ROOT / "audio/qilai/qilai.wav"
-audio_file_2 = ROOT / "audio/qilai/qilai_1.wav"
-
-'''对音频格式的文件使用Matplotlib库来绘制常见的五种音频图'''
-
-
-def formGraph(audio_file):
-    y, sr = librosa.load(audio_file)
-
-    # 计算onset envelope
-    onset_env = librosa.onset.onset_strength(y=y, sr=sr)
-
-    # 使用tempo和beat_frames识别节拍
-    tempo, beat_frames = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr)
-
-    # 绘制音频波形和节拍
-    plt.figure(figsize=(20, 15))
-
-    # 音频波形
-    plt.subplot(4, 3, 1)
-    librosa.display.waveshow(y, sr=sr, alpha=0.5)
-    plt.vlines(librosa.frames_to_time(beat_frames), -1, 1, color='r', linestyle='--', label='Beats')
-    plt.title(f'Beat Detection at {tempo:.2f} BPM')
-    plt.legend()
-
-    # 绘制谱图
-    plt.subplot(4, 3, 2)
-    spectrogram = librosa.stft(y)
-    spectrogram_db = librosa.amplitude_to_db(np.abs(spectrogram))
-    librosa.display.specshow(spectrogram_db, sr=sr, x_axis='time', y_axis='log')
-    plt.colorbar(format='%+2.0f dB')
-
-    # 梅尔频谱图
-    plt.subplot(4, 3, 4)
-    S = librosa.feature.melspectrogram(y=y, sr=sr)
-    S_dB = librosa.power_to_db(S, ref=np.max)
-    librosa.display.specshow(S_dB, sr=sr, x_axis='time', y_axis='mel')
-    plt.title('Mel Spectrogram')
-
-    # 频率-时间图
-    plt.subplot(4, 3, 5)
-    plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap='viridis', sides='default', mode='default', scale='dB');
-    plt.title('Frequency-Time Plot')
-
-    # 光谱包络图
-    plt.subplot(4, 3, 6)
-    tempogram = librosa.feature.tempogram(y=y, sr=sr)
-    librosa.display.specshow(tempogram, sr=sr, x_axis='time', y_axis='tempo')
-    plt.title('Tempogram')
-
-    plt.tight_layout()
-    plt.show()
-
-
-# formGraph(audio_file=audio_file_1)
+audio_file_1 = ROOT / "audio/qilai_wav/qilai.wav"
+audio_file_2 = ROOT / "audio/qilai_wav/qilai_1.wav"
+audio_file_3 = ROOT / "audio/qilai/qilai.mp3"
 
 '''尝试使用aubio库识别音高、节拍'''
 
@@ -111,6 +60,42 @@ def analyze_audio(filename):
     return pitches, beats
 
 
+'''使用librosa函数返回函数的音高，将音高值转为MIDI值，然后绘制成折线图'''
+
+
+def analyze_pitch(audio_file):
+    # 读取音频文件
+    y, sr = librosa.load(audio_file)
+
+    # 计算音频的音高
+    pitches, magnitudes = librosa.core.piptrack(y=y, sr=sr)
+
+    # 获取音高的索引
+    pitch_index = pitches.argmax(axis=0)
+
+    # 将索引映射为音高频率
+    pitch_frequencies = librosa.core.midi_to_hz(pitch_index)
+
+    # 将频率转换为 MIDI
+    pitch_midi = librosa.core.hz_to_midi(pitch_frequencies)
+
+    # 绘制音高曲线（折线图）
+    plt.figure(figsize=(14, 5))
+    times = librosa.times_like(pitches)
+    plt.plot(times, pitch_midi, color='r', label='Pitch (MIDI)')
+    plt.title('Pitch Analysis')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Pitch (MIDI)')
+    plt.legend()
+    plt.show()
+    return pitch_midi
+
+
+# 使用示例
+
+# a = analyze_pitch(audio_file_1)
+# print(a)
+
 '''使用audio进行音高检测，我们创建了一个aubio.pitch对象，并使用"yin"算法进行音高检测。
 然后，我们打开音频文件，并在一个循环中逐帧读取音频数据，并通过aubio.pitch对象计算当前帧的音高。
 如果检测到非零音高值，我们将其转换为MIDI音高编号，并将其添加到midi_pitches列表中'''
@@ -148,9 +133,17 @@ def extract_midi_pitches(filename, samplerate=44100, hop_size=512, win_size=4096
     return midi_pitches
 
 
-midi_standard = extract_midi_pitches(str(audio_file_1))
-midi_train = extract_midi_pitches(str(audio_file_2))
-print(f"标准是{midi_standard}，测试是：{midi_train}")
+# midi_standard = extract_midi_pitches(str(audio_file_1))
+# midi_train = extract_midi_pitches(str(audio_file_2))
+# plt.plot(midi_standard, label='aubio')
+# plt.plot(a, label='librosa')
+# # 添加图例
+# plt.legend()
+# # 显示图表
+# plt.show()
+# print(f"标准是{midi_standard}")
+# print(f"测试是{midi_train}")
+
 
 '''使用Matplotlib库来实现两首歌的音高差异，绘制差异曲线和直方图'''
 
@@ -181,11 +174,18 @@ def plot_pitch_difference(midi_standard, midi_train):
 
 '''节拍识别'''
 
-audio_file_1 = librosa.load(audio_file_1)
-# y存储音频时间序列，sr存储采样率
+audio_file_1 = librosa.load(audio_file)
 y, sr = audio_file_1
+# 计算每分钟的节拍次数 BPM
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 print(' tempo: {:.2f} beats per minute'.format(tempo))
 # 分析音频信号并找出可能的节拍位置，这些位置以帧的形式表示，每个帧都对应音频信号中的一个特定时间点
 beat_times = librosa.frames_to_time(beat_frames, sr=sr)
 print(beat_times)
+
+contrast_time = []
+for i in range(1, len(beat_times)):
+    time = beat_times[i] - beat_times[i - 1]
+    contrast_time.append(time)
+print(f'每节拍之间的时间差{contrast_time}')
+

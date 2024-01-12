@@ -2,6 +2,8 @@
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+import jieba
+import math
 
 
 def calculate_cosine_similarity(text1, text2, vectorizer_type=0):
