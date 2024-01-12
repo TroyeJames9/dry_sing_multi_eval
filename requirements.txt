@@ -4,3 +4,5 @@ librosa	== 0.10.1
 matplotlib == 3.7.2
 python-Levenshtein == 0.23.0
 aiohttp == 3.9.1
+aubio == 0.4.9
+pillow~=10.0.1
