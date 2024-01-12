@@ -15,8 +15,8 @@ def calculate_cosine_similarity(text1, text2, vectorizer_type=0):
     elif vectorizer_type == 1:
         vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(corpus)
-    print(vectorizer.get_feature_names_out())
-    print(X.toarray())
+    # print(vectorizer.get_feature_names_out())
+    # print(X.toarray())
     # 计算余弦相似度
     similarity_matrix = cosine_similarity(X)
     # 提取相似度值
@@ -34,4 +34,3 @@ def kmeanCatogery(score_dir_list, cat_num):
     print("Cluster Centers:", kmeans_model.cluster_centers_)
     print(silhouette_avg)
     return labels
-

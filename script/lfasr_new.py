@@ -270,22 +270,24 @@ def getCutPoint(
         file_name,
         threshold,
         match_str_size=20):
-    lyrics = extractLyrics(
-        lyrics_dir=lyrics_dir,
-        file_name=file_name,
-        style=2)
-    start_cut_point_index = findSubstringIndex(
-        w_str_result,
-        is_end=False,
-        lyrics=lyrics,
-        match_str_size=match_str_size,
-        threshold=threshold)
-    end_cut_point_index = findSubstringIndex(
-        w_str_result,
-        is_end=True,
-        lyrics=lyrics,
-        match_str_size=match_str_size,
-        threshold=threshold)
+    # lyrics = extractLyrics(
+    #     lyrics_dir=lyrics_dir,
+    #     file_name=file_name,
+    #     style=2)
+    # start_cut_point_index = findSubstringIndex(
+    #     w_str_result,
+    #     is_end=False,
+    #     lyrics=lyrics,
+    #     match_str_size=match_str_size,
+    #     threshold=threshold)
+    # end_cut_point_index = findSubstringIndex(
+    #     w_str_result,
+    #     is_end=True,
+    #     lyrics=lyrics,
+    #     match_str_size=match_str_size,
+    #     threshold=threshold)
+    start_cut_point_index = 0
+    end_cut_point_index = len(w_str_result) - 1
 
     print(
         "start_cut_point_index is",
@@ -323,6 +325,22 @@ def getCpTimestamp(transfer_json, target_index, is_end=False):
             cut_point_t = int(json_best["st"]["bg"]) + wb_values
             break
     return cut_point_t / 1000
+
+
+def getPerWordTime(transfer_json):
+    wt_list = []
+    for element in transfer_json:
+        json_best = json.loads(element["json_1best"])
+        sentence_bg = int(json_best["st"]["bg"])
+        ws_list = json_best["st"]["rt"][0]["ws"]
+        for word in ws_list:
+            wb_value = word["wb"] * 10
+            w_time = (sentence_bg + wb_value)/1000
+            cw_list = word["cw"][0]
+            if cw_list["wp"] in ['n', 's']:
+                w_value = gbkXfrFstLetter(word["cw"][0]["w"], style=0)
+                wt_list.append({w_value:w_time})
+    return wt_list
 
 
 def cutAudio(

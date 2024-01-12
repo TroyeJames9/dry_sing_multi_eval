@@ -9,7 +9,7 @@ import asyncio
 import aiohttp
 from pathlib import Path
 from lfasr_new import downloadOrderResult, getTransferResult, getCutPoint, getCpTimestamp, cutAudio, extractLyrics, \
-    gbkXfrFstLetter
+    gbkXfrFstLetter, getPerWordTime
 from articulation_analysis import calculate_cosine_similarity, kmeanCatogery
 
 # 在pycharm的用户环境变量配置好科大讯飞的APP_ID和secretkey
@@ -158,10 +158,12 @@ def threadProcess(
         upload_file_path,
         lyrics_file_name,
         is_cut,
+        is_download_seg,
         vectorizer_type=0):
     lyrics_part_str = extractLyricsPart(upload_file_path=upload_file_path,
                                         lyrics_file_name=lyrics_file_name,
-                                        is_cut=is_cut)
+                                        is_cut=is_cut,
+                                        is_download_seg=is_download_seg)
     file_name = os.path.basename(upload_file_path)
     cs_result = calcCosineSimilarity(
         input_audio_str=lyrics_part_str,
@@ -182,6 +184,7 @@ def threadArticulationAnalysisV3(audio_song_name):
                 lambda x: threadProcess(
                     lyrics_file_name=lyrics_file_name,
                     is_cut=False,
+                    is_download_seg=False,
                     upload_file_path=x),
                 upload_file_paths))
     return result_list
@@ -210,9 +213,22 @@ def test_loop_vs_multithread():
         start_time_V3)
 
 
+def test():
+    result_json = downloadOrderResult(
+        appid=LFASR_APP_ID,
+        secret_key=LFASR_SECRETKEY,
+        lyrics_dir=LYRICS_DIR,
+        lyrics_file_name='song_demo.txt',
+        upload_file_path=UPLOAD_FILE_DIR / 'song_demo.mp3',
+        download_dir=DOWNLOAD_DIR,
+        output_file_name=OUTPUT_JSON_NAME)
+    print(getPerWordTime(result_json))
+
+
 if __name__ == '__main__':
     # loopExtractLyricsPartV1('fenHongSeDeHuiYi')
     # print(threadExtractLyricsPartV3('fenHongSeDeHuiYi'))
     # test_loop_vs_multithread()
-    print(run())
+    # print(run())
+    test()
     pass
