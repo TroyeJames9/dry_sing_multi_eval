@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+
+"""调用科大讯飞的语音转写API提取转写结果，并根据歌词文件与转写结果的比对结果剔除音频的非演唱部分。
+
+API说明详见“https://www.xfyun.cn/doc/asr/ifasr_new/API.html” 。
+API转写结果的json结构详见 https://mubu.com/doc/5ZN7PfUKD9Y 的“解析API的orderResult json字符串”
+
+"""
+
 import base64
 import hashlib
 import hmac
@@ -9,6 +17,8 @@ import requests
 import urllib
 import sys
 import re
+import doctest
+from pathlib import Path
 from pydub import AudioSegment
 from pypinyin import pinyin, lazy_pinyin, Style
 
@@ -19,6 +29,24 @@ api_get_result = '/getResult'
 
 
 class RequestApi(object):
+    """调用科大讯飞的语音转写API，从API获得json形式的转写结果
+
+    API说明详见“https://www.xfyun.cn/doc/asr/ifasr_new/API.html” 。
+    设定的属性可以根据API可选参数来继续扩充，troyejames9根据本项目需求添加了hotword属性。
+
+    属性：
+        appid：
+            科大讯飞个人账号的应用id，需在https://www.xfyun.cn/的控制台新建应用来获取appid。
+        secret_key：
+            科大讯飞应用id对应的密钥。
+        upload_file_path：
+            音频文件的绝对路径，可选格式包括mp3,wav,pcm,aac,opus,flac,ogg,
+            m4a,amr,speex（微信）,lyb,ac3,aac,ape,m4r,mp4,acc,wma。
+        hotword：
+            热词，用以提升专业词汇的识别率，格式为“热词1| 热词2| 热词3”，
+            单个热词长度为[2,16]，热词个数限制 200个。
+    """
+
     def __init__(self, appid, secret_key, upload_file_path, hotword):
         self.appid = appid
         self.secret_key = secret_key
@@ -28,6 +56,7 @@ class RequestApi(object):
         self.hotword = hotword
 
     def get_signa(self):
+        """根据appid和secret_key生成鉴权字符串signa。"""
         appid = self.appid
         secret_key = self.secret_key
         m2 = hashlib.md5()
@@ -44,6 +73,12 @@ class RequestApi(object):
         return signa
 
     def upload(self):
+        """将属性及其得到的参数进行传参，调用语音转写API。
+
+        返回：
+            json格式的upload_result，具体键值对详见
+            “https://www.xfyun.cn/doc/asr/ifasr_new/API.html#%E6%8E%A5%E5%8F%A3%E8%AF%B4%E6%98%8E” 。
+        """
         print("upload part：")
         upload_file_path = self.upload_file_path
         file_len = os.path.getsize(upload_file_path)
@@ -55,9 +90,9 @@ class RequestApi(object):
         param_dict['ts'] = self.ts
         param_dict["fileSize"] = file_len
         param_dict["fileName"] = file_name
-        param_dict["duration"] = "200"
-        param_dict["language"] = "cn"
-        param_dict["hotWord"] = self.hotword
+        param_dict["duration"] = "200"  # 没严格限制，无需修改
+        param_dict["language"] = "cn"  # 选择语言
+        param_dict["hotWord"] = self.hotword  # 热词
         """
         以下为部分额外可选的传入参数，可根据需要以此形式添加参数
         可选参数详见https://www.xfyun.cn/doc/asr/ifasr_new/API.html
@@ -85,6 +120,16 @@ class RequestApi(object):
         return upload_result
 
     def get_result(self):
+        """调用科大讯飞API获取json格式的转写结果。
+
+        根据upload方法输出的order_Id来调用API获取order_id对应的转写结果，调用频率设定为每秒1次，
+        每秒最大并发量为18，根据API返回的json结果中的status键的值来确定API状态，如果status等于4
+        则意味着转写完成，返回json结果。
+
+        返回：
+            json格式的转写结果，键值对详见
+            “https://www.xfyun.cn/doc/asr/ifasr_new/API.html” 。
+        """
         uploadresp = self.upload()
         orderId = uploadresp['content']['orderId']
         param_dict = {}
@@ -113,24 +158,49 @@ class RequestApi(object):
             print("status=", status)
             if status == 4 and status == -1:
                 break
-            time.sleep(1)
+            time.sleep(1)  # 每隔一秒调用一次API
         return result
 
 
-# 定义downloadOrderResul方法：规范音频文件名，若音频文件未下载好，则会连接api后下载音频文件并转为JSON本地文件
 def downloadOrderResult(
-        appid,
-        secret_key,
-        lyrics_dir,
-        lyrics_file_name,
-        upload_file_path,
-        download_dir,
-        output_file_name):
+        appid: str,
+        secret_key: str,
+        lyrics_dir: Path,
+        lyrics_file_name: str,
+        upload_file_path: Path,
+        download_dir: Path,
+        output_file_name: str) -> dict:
+    """调用RequestApi类来获取音频转写的json格式字符串结果。
+
+    首先提取音频名，结合output_file_name来对json结果文件进行命名，
+    下载之前判断json结果文件的绝对路径是否存在，如不存在才调用API，
+    然后根据json的结构去提取orderResult的识别结果内容。
+    json结构详见https://mubu.com/doc/5ZN7PfUKD9Y 的“解析API的orderResult json字符串” 。
+
+    参数：
+        appid(str)：
+            科大讯飞个人账号的应用id，需在https://www.xfyun.cn/的控制台新建应用来获取appid。
+        secret_key(str)：
+            科大讯飞应用id对应的密钥。
+        lyrics_dir(Path)：
+            歌词文件目录的绝对路径。
+        lyrics_file_name(str)：
+            歌词文件名称，歌词用于制作热词。
+        upload_file_path(Path)：
+            音频文件的绝对路径，可选格式包括mp3,wav,pcm,aac,opus,flac,ogg,
+            m4a,amr,speex（微信）,lyb,ac3,aac,ape,m4r,mp4,acc,wma。
+        download_dir(Path)：
+            json结果文件下载的所在目录。
+        output_file_name(str)：
+            json结果文件的名称后缀，用来与音频文件名拼接得到json结果文件名。
+
+    返回：
+        转写结果的json数据，提取了结果中['content']→['orderResult']→["lattice"]键。
+        输出实例见orderResult_example/orderResult_lattice.json。
+    """
     file_name = os.path.basename(upload_file_path)
-    # 通过正则表达规范所获取歌曲的名字，获取第一个"."之前的内容
     real_file_name = re.search(r"^(.*?)\.", file_name).group(1)
     new_output_file_name = real_file_name + '_' + output_file_name
-    # 将下载目录路径和新的输出文件名拼接，生成完整的json结果下载路径
     download_path = download_dir / new_output_file_name
     # 判断音频的json文件是否已经存在，已存在则不执行下载操作
     if not os.path.exists(download_path):
@@ -142,7 +212,6 @@ def downloadOrderResult(
         else:
             print(f"Path '{download_dir}' already exists.")
         hotword = getHotWords(lyrics_dir=lyrics_dir, file_name=lyrics_file_name)
-        # 使用提供的应用程序ID、密钥和上传文件路径初始化
         api = RequestApi(appid=appid,
                          secret_key=secret_key,
                          upload_file_path=upload_file_path,
@@ -152,7 +221,7 @@ def downloadOrderResult(
         orderResult_str = transfer_result['content']['orderResult']
         orderResult_json = json.loads(orderResult_str)
         lattice_json = orderResult_json["lattice"]
-        # 将下载后的JSON文件保存到本地
+        # 将JSON数据保存到本地
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(lattice_json, json_file, indent=2, ensure_ascii=False)
         print(f"File '{download_path}' created!")
@@ -163,9 +232,25 @@ def downloadOrderResult(
     return lattice_json
 
 
-# gbkXfrFstLetter方法：用于将给定的GBK编码字符串转换为拼音首字母
-def gbkXfrFstLetter(gbk_str, style):
-    # style参数指定了转换的风格，即只返回拼音的首字母
+def gbkXfrFstLetter(gbk_str: str, style: int) -> str:
+    """转换给定的GBK编码字符串。
+
+    参数：
+        gbk_str(str)：
+            待转换的GBK字符串。
+        style(int)：
+            三种转换风格，分别为{0=不转换, 1=拼音, 2=拼音首字母}。
+
+    返回：
+        转换后的字符串。
+
+    >>> gbkXfrFstLetter('我的祖国', 0)
+    '我的祖国'
+    >>> gbkXfrFstLetter('我的祖国', 1)
+    'wo de zu guo'
+    >>> gbkXfrFstLetter('我的祖国', 2)
+    'wdzg'
+    """
     if style == 0:
         return gbk_str
     elif style == 1:
@@ -180,8 +265,20 @@ def gbkXfrFstLetter(gbk_str, style):
     return reg_pinyin_result
 
 
-# extraValues方法：用于从给定的数据中提取特定键（"w"键）的值，并根据需要将中文转换为拼音首字母
-def extractValues(data, style=2):
+def extractValues(data: dict, style: int) -> list:
+    """从json格式的转写结果提取转写字符进行拼接。
+
+    使用递归对传入的json进行递归遍历，当key为'w'时停止遍历，提取对应的值添加到存储字符的列表。
+
+    参数：
+        data(dict):
+            downloadOrderResult函数的返回结果的st键值对。
+        style(int):
+            三种转换风格，分别为{0=不转换, 1=拼音, 2=拼音首字母}。
+
+    返回：
+        指定风格的转写结果列表。
+    """
     w_values = []
     # 如果data是一个列表，遍历列表中的每个元素，并递归调用extractValues函数，将返回的值扩展到w_values列表中
     if isinstance(data, list):
@@ -192,7 +289,6 @@ def extractValues(data, style=2):
     elif isinstance(data, dict):
         for key, value in data.items():
             if key == "w":
-                # 是否将中文转成拼音首字母，结果用于音频切割
                 w_values.append(gbkXfrFstLetter(value, style=style))
             else:
                 w_values.extend(
@@ -201,9 +297,22 @@ def extractValues(data, style=2):
 
 
 # getTransferResult方法：从给定的JSON文件中获取转写结果，并根据需要将中文转换为拼音首字母
-def getTransferResult(transfer_json, style=2):
+def getTransferResult(transfer_json: dict, style: int) -> str:
+    """从downloadOrderResult函数的返回结果提取指定风格的转写字符串。
+
+    由于transfer_json参数实际上包含了一个元素为json字符串的列表，每个元素为音频中一句话（歌词），
+    因此需要先循环列表每个元素（json_1best)加载为字典，再使用extractValues函数提取每个字典的所有"w"键的值。
+
+    参数：
+        transfer_json(dict):
+            downloadOrderResult函数的返回结果。
+        style(int):
+            三种转换风格，分别为{0=不转换, 1=拼音, 2=拼音首字母}。
+
+    返回：
+        指定风格的转写结果字符串。
+    """
     w_list = []
-    # 解析元素中的JSON字符串，获取转写结果,从转写结果中提取值，调用extractValues函数，并将返回的值合并为一个字符串
     for element in transfer_json:
         sentence = json.loads(element["json_1best"])
         w_values = extractValues(sentence, style=style)
@@ -216,7 +325,20 @@ def getTransferResult(transfer_json, style=2):
     return transfer_result
 
 
-def extractLyrics(lyrics_dir, file_name, style=2):
+def extractLyrics(lyrics_dir: Path, file_name: str, style: int) -> str:
+    """从存储歌词的txt提取中文字符后输出指定风格字符串。
+
+    参数：
+        lyrics_dir(Path):
+            歌词txt文件所在目录的绝对路径。
+        file_name(str):
+            歌词txt文件名。
+        style(int):
+            三种转换风格，分别为{0=不转换, 1=拼音, 2=拼音首字母}。
+
+    返回：
+        歌词的指定风格字符串。
+    """
     lyrics_path = lyrics_dir / file_name
     with open(lyrics_path, 'r', encoding='utf-8') as file:
         raw_lyrics = file.read()
@@ -226,7 +348,21 @@ def extractLyrics(lyrics_dir, file_name, style=2):
     return lyrics
 
 
-def getHotWords(lyrics_dir, file_name):
+def getHotWords(lyrics_dir: Path, file_name: str) -> str:
+    """歌词拆分成热词，作为调用API的hotword参数值
+
+    歌词txt文件的标准要求为一行为一句歌词，长度不超过20个中文字符，
+    本函数将一个或连续的换行符替换成"|"，并将非中文字符替换为空，从而得到“或”形式的hotword正则表达式。
+
+    参数：
+        lyrics_dir(Path):
+            歌词txt文件所在目录的绝对路径。
+        file_name(str):
+            歌词txt文件名。
+
+    返回：
+        由|分割的hotword正则表达式字符串。
+    """
     lyrics_path = lyrics_dir / file_name
     with open(lyrics_path, 'r', encoding='utf-8') as file:
         raw_lyrics = file.read()
@@ -236,12 +372,37 @@ def getHotWords(lyrics_dir, file_name):
     return result
 
 
+# TODO: 仍然受限于容错率问题，需要考虑使用编辑距离来编写一个新的索引函数。（也可以在findSubstringIndex函数基础上进行改版）
 def findSubstringIndex(
-        full_str,
-        lyrics,
+        full_str: str,
+        lyrics: str,
         threshold=0.6,
         is_end=False,
-        match_str_size=20):
+        match_str_size=20) -> int:
+    """通过歌词与API转写结果的元素比对确定音频切割在转写结果中的起始索引和终点索引。
+
+    给定API转写结果字符串与歌词字符串，取歌词开头（结尾）前match_str_size个字符作为匹配字符串，
+    与API转写结果字符串从开头（结尾）起的前match_str_size个字符串match_str 进行同位元素比对，同位元素个数占比
+    如果大于threshold，则返回当前match_str开头（结尾）在API转写结果字符串中的索引，作为开头（结尾）索引，
+    否则match_str的起始索引继续往左（右）挪一位，再取match_str_size个字符作为匹配字符串继续匹配。
+
+    注意：保持full_str与lyrics的风格一致！
+
+    参数：
+        full_str(str):
+            getTransferResult函数的结果字符串。
+        lyrics(str):
+            歌词字符串。
+        threshold(float):
+            匹配阈值，当大于此值，则意味着字符串很有可能是同一句话。默认0.6。
+        is_end(bool):
+            当前任务是否为匹配终点索引。默认False（匹配起始索引）。
+        match_str_size(int):
+            匹配字符串的长度。默认20。
+
+    返回：
+        返回音频切割所需的起始（终点）索引。
+    """
     if is_end:
         match_str = lyrics[-1 * match_str_size:]
         range_list = reversed(range(len(full_str) - match_str_size + 1))
@@ -264,6 +425,7 @@ def findSubstringIndex(
         f"Failed to match the head index of string {'match_str'}, please try again")
 
 
+# TODO: 仍然受限于容错率问题，需要考虑使用编辑距离来编写一个新的索引函数。（也可以在findSubstringIndex函数进行改版）
 def getCutPoint(
         lyrics_dir,
         w_str_result,
@@ -297,7 +459,26 @@ def getCutPoint(
     return start_cut_point_index, end_cut_point_index
 
 
-def findWbValue(sentence, current_index, target_index, is_end=False):
+def findWbValue(sentence: dict, current_index: int, target_index: int, is_end=False) -> tuple:
+    """根据目标索引来确定索引所对应的时间戳。
+
+    遍历传入的sentence的字典，来提取"w"值对应的wb（we）的取值，当加上当前"w"字符串长度后的current_index
+    大于等于target_index + 1，返回wb（we），作为音频切割的时间戳。如果遍历完sentence字典current_index仍然
+    小于target_index + 1，则返回current_index用作下次调用findWbValue函数的参数。
+
+    参数：
+        sentence(dict):
+            downloadOrderResult函数的返回结果的st键值对。
+        current_index(int):
+            当前已积累的索引。
+        target_index(int):
+            作为切割点的目标索引。由getCutPoint函数计算。
+        is_end(bool):
+            当前任务是否为匹配终点索引。默认False（匹配起始索引）。
+
+    返回：
+        一个元组，包括最新的current_index与对应的wb。
+    """
     ws_list = sentence["rt"][0]["ws"]
     for word in ws_list:
         if is_end:
@@ -315,7 +496,21 @@ def findWbValue(sentence, current_index, target_index, is_end=False):
     return current_index, wb_value
 
 
-def getCpTimestamp(transfer_json, target_index, is_end=False):
+def getCpTimestamp(transfer_json: dict, target_index: int, is_end=False) -> float:
+    """遍历API转写结果，找到target_index在音频中对应的时间戳。
+
+    参数：
+        transfer_json(dict):
+            downloadOrderResult函数的返回结果。
+        target_index(int):
+            作为切割点的目标索引。由getCutPoint函数计算。
+        is_end(bool):
+            当前任务是否为匹配终点索引。默认False（匹配起始索引）。
+
+    返回：
+        音频切割所需的时间戳，单位为秒。
+
+    """
     current_index = 0
     for element in transfer_json:
         json_best = json.loads(element["json_1best"])
@@ -327,7 +522,16 @@ def getCpTimestamp(transfer_json, target_index, is_end=False):
     return cut_point_t / 1000
 
 
-def getPerWordTime(transfer_json):
+def getPerWordTime(transfer_json: dict) -> list:
+    """输出API转写结果json数据的"w"键的值与对应时间戳构成键值对的字典列表。
+
+    参数：
+        transfer_json(dict):
+            downloadOrderResult函数的返回结果
+
+    返回：
+        一个列表，每个元素是一个字典，键为"w"的值，值为时间戳。
+    """
     wt_list = []
     for element in transfer_json:
         json_best = json.loads(element["json_1best"])
@@ -335,20 +539,38 @@ def getPerWordTime(transfer_json):
         ws_list = json_best["st"]["rt"][0]["ws"]
         for word in ws_list:
             wb_value = word["wb"] * 10
-            w_time = (sentence_bg + wb_value)/1000
+            w_time = (sentence_bg + wb_value) / 1000
             cw_list = word["cw"][0]
             if cw_list["wp"] in ['n', 's']:
                 w_value = gbkXfrFstLetter(word["cw"][0]["w"], style=0)
-                wt_list.append({w_value:w_time})
+                wt_list.append({w_value: w_time})
     return wt_list
 
 
 def cutAudio(
-        start_time=0,
+        start_time=0.0,
         end_time=None,
         output_dir=None,
         output_audio=None,
         input_audio=None):
+    """给定时间戳对音频进行切割
+
+    参数：
+        start_time(float):
+            切割的起始时间戳。
+        end_time(float):
+            切割的终点时间戳。
+        output_dir(Path):
+            音频文件输出目录的绝对路径。
+        output_audio(str):
+            音频文件输出名。
+        input_audio(Path):
+            待切割音频的绝对路径。
+
+    返回：
+        已切割的音频文件。
+
+    """
     file_name = os.path.basename(input_audio)
     output_name = file_name + '_' + output_audio
     output_path = output_dir / output_name
@@ -362,3 +584,7 @@ def cutAudio(
         end_time = duration_s
     segment = audio[start_time * 1000:end_time * 1000]
     segment.export(output_path, format="mp3")
+
+
+if __name__ == '__main__':
+    doctest.testmod()

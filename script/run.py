@@ -229,6 +229,6 @@ if __name__ == '__main__':
     # loopExtractLyricsPartV1('fenHongSeDeHuiYi')
     # print(threadExtractLyricsPartV3('fenHongSeDeHuiYi'))
     # test_loop_vs_multithread()
-    # print(run())
-    test()
+    print(run())
+    # test()
     pass
