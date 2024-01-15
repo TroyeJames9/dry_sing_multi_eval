@@ -150,7 +150,7 @@ def extract_midi_pitches(filename, samplerate=44100, hop_size=512, win_size=4096
 
 midi_standard = extract_midi_pitches(str(audio_file_1))
 midi_train = extract_midi_pitches(str(audio_file_2))
-print(f"标准是{midi_standard}，测试是：{midi_train}")
+print(f"标准是{midi_standard}\n测试是：{midi_train}")
 
 '''使用Matplotlib库来实现两首歌的音高差异，绘制差异曲线和直方图'''
 
