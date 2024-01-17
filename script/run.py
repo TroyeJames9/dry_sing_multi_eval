@@ -6,11 +6,10 @@ import glob
 import time
 import concurrent.futures
 import asyncio
-import aiohttp
 from pathlib import Path
 from lfasr_new import downloadOrderResult, getTransferResult, getCutPoint, getCpTimestamp, cutAudio, extractLyrics, \
     gbkXfrFstLetter, getPerWordTime
-from articulation_analysis import calculate_cosine_similarity, kmeanCatogery
+from score.articulation_analysis import calculate_cosine_similarity, kmeanCatogery
 
 # 在pycharm的用户环境变量配置好科大讯飞的APP_ID和secretkey
 LFASR_APP_ID = os.getenv("LFASR_APP_ID")
@@ -47,6 +46,7 @@ def extractLyricsPart(
         audio_dir=AUDIO_DIR,
         output_audio_name=OUTPUT_AUDIO_NAME
 ):
+    """传入音频后可根据歌词文件级"""
     result_json = downloadOrderResult(
         appid=app_id,
         secret_key=secret_key,
@@ -198,7 +198,7 @@ def run():
 
 def test_loop_vs_multithread():
     start_time_V1 = time.time()
-    loopExtractLyricsPartV1('fenHongSeDeHuiYi')
+    loopArticulationAnalysisV1('fenHongSeDeHuiYi')
     end_time_V1 = time.time()
     input("请删除resultJson里由v1生成的json，删除完输入y")
     start_time_V3 = time.time()

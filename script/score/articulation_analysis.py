@@ -27,15 +27,25 @@ def calculate_cosine_similarity(text1, text2, vectorizer_type=0):
 
 
 def kmeanCatogery(score_dir_list, cat_num):
+    result_dict = {}
     score_list = [value for dictionary in score_dir_list for value in dictionary.values()]
     scores = np.array(score_list)
+
     kmeans_model = KMeans(n_clusters=cat_num)
     kmeans_model.fit(scores.reshape(-1, 1))
     labels = kmeans_model.labels_
-    silhouette_avg = silhouette_score(scores.reshape(-1, 1), labels)
+
+    # 打印聚类中心和轮廓系数
     print("Cluster Centers:", kmeans_model.cluster_centers_)
+    silhouette_avg = silhouette_score(scores.reshape(-1, 1), labels)
     print(silhouette_avg)
-    return labels
+
+    # 将歌曲文件名和聚类结果添加到结果字典中
+    for idx, score_dict in enumerate(score_dir_list):
+        song_name = list(score_dict.keys())[0]
+        result_dict[song_name] = labels[idx]
+
+    return result_dict
 
 
 # 使用jieba库切词后实现中文句子的余弦相似打分，text文本需传入字符串
