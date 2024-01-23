@@ -24,9 +24,18 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
+# data
 DATA_DIR = ROOT / "data"
+RAW_DATA_DIR = DATA_DIR / "raw_data"
+RESULT_DATA_DIR = DATA_DIR / "result_data"
+
+# eigen_json
 EIGEN_DIR = ROOT / "eigen_json"
+
+# audio
 UPLOAD_FILE_DIR = ROOT / "audio"
+
+
 DOWNLOAD_DIR = ROOT / 'resultJson'
 LYRICS_DIR = ROOT / "lyrics"
 AUDIO_DIR = ROOT / "resultAudio"
