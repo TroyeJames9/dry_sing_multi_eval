@@ -10,7 +10,7 @@ from pathlib import Path
 from lfasr_new import downloadOrderResult, getTransferResult, getCutPoint, getCpTimestamp, cutAudio, extractLyrics, \
     gbkXfrFstLetter, getPerWordTime
 from score.articulation_analysis import calculate_cosine_similarity, kmeanCatogery
-from setting import LFASR_APP_ID, LFASR_SECRETKEY, FILE, ROOT, UPLOAD_FILE_DIR, DOWNLOAD_DIR, LYRICS_DIR, AUDIO_DIR, \
+from setting import LFASR_APP_ID, LFASR_SECRETKEY, ROOT, UPLOAD_FILE_DIR, DOWNLOAD_DIR, LYRICS_DIR, AUDIO_DIR, \
     OUTPUT_JSON_NAME, OUTPUT_AUDIO_NAME
 
 
