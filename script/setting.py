@@ -4,7 +4,7 @@
 
 其他模块需要使用本模块全局变量时，在模块开头导入本模块即可
 例子：
-    from setting import ROOT,LFASR_APP_ID,LFASR_SECRETKEY...
+    from setting import *...
 
 """
 
@@ -35,9 +35,17 @@ EIGEN_DIR = ROOT / "eigen_json"
 # audio
 UPLOAD_FILE_DIR = ROOT / "audio"
 
-
+# resultJson
 DOWNLOAD_DIR = ROOT / 'resultJson'
+
+# lyrics
 LYRICS_DIR = ROOT / "lyrics"
+
+# resultAudio
 AUDIO_DIR = ROOT / "resultAudio"
+
+# json结果的名字后缀
 OUTPUT_JSON_NAME = 'orderResult.json'
+
+# 预处理后的audio的后缀
 OUTPUT_AUDIO_NAME = "seg.mp3"
