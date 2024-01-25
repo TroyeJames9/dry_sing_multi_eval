@@ -6,7 +6,6 @@ python-Levenshtein == 0.23.0
 aiohttp == 3.9.1
 pillow~=10.0.1
 jieba == 0.42.1
-black >= 23.12.1  # Code formatting
 
 # hanyu£ºmadmom
 # jianxin£ºpytorch
