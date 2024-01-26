@@ -1,0 +1,42 @@
+{
+  "bpm": 120,
+  "key_signature": "G",
+  "time_signature": [2, 4],
+  "eigen_list": [
+    {
+      "word": "起",
+      "eigen": {
+        "note": ["-5"],
+        "time": [0.5]
+      }
+    },
+    {
+      "word": "来",
+      "eigen": {
+        "note": ["1"],
+        "time": [1.5]
+      }
+    },
+    {
+      "word": "不",
+      "eigen": {
+        "note": ["1"],
+        "time": [0.5]
+      }
+    },
+    {
+      "word": "愿",
+      "eigen": {
+        "note": ["1"],
+        "time": [0.75]
+      }
+    },
+    {
+      "word": "做",
+      "eigen": {
+        "note": ["1"],
+        "time": [0.25]
+      }
+    }
+  ]
+}
