@@ -62,9 +62,8 @@ def xfrVocalTract(
     # 重采样
     y_resampled = librosa.resample(y, orig_sr=sr, target_sr=target_sr)
 
-    # 转换为单声道
-    if vt_num == 1 and len(y_resampled.shape) > 1:
-        y_resampled = np.mean(y_resampled, axis=0)
+    # 将音频信号转换为单声道
+    y_resampled = librosa.to_mono(y_resampled)
 
     return y_resampled, target_sr
 
