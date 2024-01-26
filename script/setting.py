@@ -28,6 +28,7 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 DATA_DIR = ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw_data"
 RESULT_DATA_DIR = DATA_DIR / "result_data"
+FREQ_CSV = "调号音符频率表.csv"
 
 # eigen_json
 EIGEN_DIR = ROOT / "eigen_json"
@@ -52,5 +53,8 @@ OUTPUT_AUDIO_NAME = "seg.mp3"
 
 # 测试脚手架
 TEST_DIR = ROOT / "test_space"
-TEST_AUDIO_DIR = ROOT / "audio"
-TEST_EIGEN_DIR = ROOT / "eigen_json"
+TEST_AUDIO_DIR = TEST_DIR / "audio"
+TEST_EIGEN_DIR = TEST_DIR / "eigen_json"
+TEST_DATA_DIR = TEST_DIR / "data"
+TEST_RAWDATA_DIR = TEST_DATA_DIR / "raw_data"
+TEST_RESULTDATA_DIR = TEST_DATA_DIR / "result_data"

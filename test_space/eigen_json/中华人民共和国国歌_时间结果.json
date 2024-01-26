@@ -7,42 +7,42 @@
       "word": "起",
       "eigen": {
         "note": ["-5"],
-        "time": [0.5]
+        "time": [0.25]
       }
     },
     {
       "word": "来",
       "eigen": {
         "note": ["1"],
-        "time": [1.5]
+        "time": [0.75]
       }
     },
     {
       "word": "不",
       "eigen": {
         "note": ["1"],
-        "time": [0.5]
+        "time": [0.25]
       }
     },
     {
       "word": "愿",
       "eigen": {
         "note": ["1"],
-        "time": [0.75]
+        "time": [0.375]
       }
     },
     {
       "word": "做",
       "eigen": {
         "note": ["1"],
-        "time": [0.25]
+        "time": [0.125]
       }
     },
     {
       "word": "测",
       "eigen": {
         "note": ["1","--6"],
-        "time": [0.5, 0.5]
+        "time": [0.25, 0.25]
       }
     }
   ]
