@@ -36,7 +36,7 @@ EIGEN_DIR = ROOT / "eigen_json"
 UPLOAD_FILE_DIR = ROOT / "audio"
 
 # resultJson
-DOWNLOAD_DIR = ROOT / 'resultJson'
+DOWNLOAD_DIR = ROOT / "resultJson"
 
 # lyrics
 LYRICS_DIR = ROOT / "lyrics"
@@ -45,7 +45,7 @@ LYRICS_DIR = ROOT / "lyrics"
 AUDIO_DIR = ROOT / "resultAudio"
 
 # json结果的名字后缀
-OUTPUT_JSON_NAME = 'orderResult.json'
+OUTPUT_JSON_NAME = "orderResult.json"
 
 # 预处理后的audio的后缀
 OUTPUT_AUDIO_NAME = "seg.mp3"
