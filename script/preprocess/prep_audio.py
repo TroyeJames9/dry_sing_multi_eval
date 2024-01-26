@@ -4,8 +4,8 @@ xfrVocalTract方法使用librosa库对音乐重采样为统一的16000并转为�
 
 经典的使用案例：
 
-y_resampled, target_sr = xfrVocalTract(dataset_name="mp3", audio_name="广东番禺中学附属学校_万可之.mp3")
-reduced_noise = noiseReduce(y=y_resampled, sr=target_sr, thresh_n_mult_nonstationary=3)
+y_resampled, target_sr = xfrVocalTract(dataset_name="qilai", audio_name="qilai_1.mp3")
+reduced_noise = noiseReduce(y=y_resampled, sr=target_sr)
 """
 
 # -*- coding: utf-8 -*-
@@ -26,8 +26,7 @@ def xfrVocalTract(
     dataset_name: str = None,
     audio_name: str = None,
     target_sr: int = 16000,
-    vt_num: int = 1,
-) -> np.ndarray:
+) -> tuple:
     """按照target_sr进行重采样后，将声道数转化为指定数（一般项目需求为单声道）
 
     假设某一首歌的路径为 /Users/lijianxin/speech_recognition/audio/mp3/xxx.mp3
@@ -45,7 +44,7 @@ def xfrVocalTract(
             需要设置的声道数。
 
     返回：
-        单声道音频文件的时域信号（一维的NumPy数组）y_resampled 和目标采样率target_sr。
+        1个元组，单声道音频文件的时域信号（一维的NumPy数组）y_resampled 和目标采样率target_sr。
     """
 
     if dataset_name is None:
@@ -71,7 +70,6 @@ def xfrVocalTract(
 def noiseReduce(
     y: np.ndarray = None,
     sr: int = None,
-    thresh_n_mult_nonstationary: int = 2,
     prop_decrease: float = 0.8,
     stationary: bool = False,
 ) -> np.ndarray:
@@ -97,8 +95,6 @@ def noiseReduce(
     reduced_noise = nr.reduce_noise(
         y=y,
         sr=sr,
-        n_std_thresh_stationary=1.5,
-        thresh_n_mult_nonstationary=thresh_n_mult_nonstationary,
         prop_decrease=prop_decrease,
         stationary=stationary,
     )
