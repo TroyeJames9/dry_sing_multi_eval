@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
+import pandas as pd
 from setting import *
-from result import *
+from result.dataframe_op import *
 
 
 class TestResult(unittest.TestCase):
@@ -12,3 +13,4 @@ class TestResult(unittest.TestCase):
     def test_batchCsv2Pd(self):
         pd_dict = batchCsv2Pd(csv_dir=self.csv_dir)
         assertEqual(set(pd_dict.keys()) == set(self.expected_pd_dict_keys))
+        assertTrue(all(isinstance(value, pd.DataFrame) for value in pd_dict.values()))

@@ -49,7 +49,7 @@ AUDIO_DIR = ROOT / "resultAudio"
 OUTPUT_JSON_NAME = "orderResult.json"
 
 # 预处理后的audio的后缀
-OUTPUT_AUDIO_NAME = "seg.mp3"
+OUTPUT_AUDIO_NAME = "seg.wav"
 
 # 测试脚手架
 TEST_DIR = ROOT / "test_space"

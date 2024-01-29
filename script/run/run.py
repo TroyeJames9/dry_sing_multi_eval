@@ -35,7 +35,7 @@ def extractLyricsPart(
     is_download_seg=False,
     cut_style=2,
     extract_style=0,
-    match_str_size=20,
+    match_str_size=5,
     threshold=0.6,
     app_id=LFASR_APP_ID,
     secret_key=LFASR_SECRETKEY,
@@ -61,8 +61,11 @@ def extractLyricsPart(
     pattern = re.compile(r"[^\u4e00-\u9fa5]")
     extract_result = re.sub(pattern, "", raw_extract_result)
     start_cut_point, end_cut_point = 0, len(extract_result)
-
-    if is_cut:
+    # temp，判断是否为国歌
+    cos_rs = calcCosineSimilarity(extract_result)
+    if cos_rs < 0.7:
+        temp_rs = 0
+    if is_cut and cos_rs > 0.7:
         start_cut_point, end_cut_point = getCutPoint(
             w_str_result=w_str_result,
             file_name=lyrics_file_name,
@@ -70,7 +73,11 @@ def extractLyricsPart(
             lyrics_dir=lyrics_dir,
             threshold=threshold,
         )
-        if is_download_seg:
+        if start_cut_point == 0:
+            temp_rs = -1
+        else:
+            temp_rs = 1
+        if is_download_seg and temp_rs==1:
             s_cut_point_t = (
                 getCpTimestamp(result_json, start_cut_point, is_end=False) - 0.2
             )
@@ -92,7 +99,7 @@ def extractLyricsPart(
                 input_audio=upload_file_path,
             )
     lyrics_part_str = extract_result[int(start_cut_point) : int(end_cut_point + 1)]
-    return lyrics_part_str
+    return lyrics_part_str, temp_rs
 
 
 def calcCosineSimilarity(
@@ -116,10 +123,12 @@ def loopArticulationAnalysisV1(audio_song_name):
     folder_path = UPLOAD_FILE_DIR / audio_song_name
     lyrics_file_name = audio_song_name + ".txt"
     mp3_files = glob.glob(os.path.join(folder_path, "*.mp3"))
+    temp_list = []
     for file_path in mp3_files:
-        lyrics_part_str = extractLyricsPart(
-            upload_file_path=file_path, lyrics_file_name=lyrics_file_name, is_cut=False
+        lyrics_part_str, temp_rs = extractLyricsPart(
+            upload_file_path=file_path, lyrics_file_name=lyrics_file_name, is_cut=True, is_download_seg=True
         )
+        temp_list.append({file_path: temp_rs, str: lyrics_part_str})
         print(
             calcCosineSimilarity(
                 input_audio_str=lyrics_part_str,
@@ -127,6 +136,8 @@ def loopArticulationAnalysisV1(audio_song_name):
                 vectorizer_type=0,
             )
         )
+    filtered_list = [d for d in temp_list if list(d.values())[0] == -1]
+    print(filtered_list)
 
 
 async def asyncioExtractLyricsPart(
@@ -176,7 +187,8 @@ def asyncArticulationAnalysisV2(audio_song_name):
 def threadProcess(
     upload_file_path, lyrics_file_name, is_cut, is_download_seg, vectorizer_type=0
 ):
-    lyrics_part_str = extractLyricsPart(
+
+    lyrics_part_str, temp_rs = extractLyricsPart(
         upload_file_path=upload_file_path,
         lyrics_file_name=lyrics_file_name,
         is_cut=is_cut,
@@ -202,8 +214,8 @@ def threadArticulationAnalysisV3(audio_song_name):
             executor.map(
                 lambda x: threadProcess(
                     lyrics_file_name=lyrics_file_name,
-                    is_cut=False,
-                    is_download_seg=False,
+                    is_cut=True,
+                    is_download_seg=True,
                     upload_file_path=x,
                 ),
                 upload_file_paths,
@@ -213,7 +225,8 @@ def threadArticulationAnalysisV3(audio_song_name):
 
 
 def run():
-    score_dir_list = threadArticulationAnalysisV3("fenHongSeDeHuiYi")
+
+    score_dir_list = threadArticulationAnalysisV3("国歌")
     labels = kmeanCatogery(score_dir_list=score_dir_list, cat_num=4)
     return labels
 
@@ -248,9 +261,9 @@ def test():
 
 
 if __name__ == "__main__":
-    # loopExtractLyricsPartV1('fenHongSeDeHuiYi')
+    loopArticulationAnalysisV1('国歌')
     # print(threadExtractLyricsPartV3('fenHongSeDeHuiYi'))
     # test_loop_vs_multithread()
-    print(run())
+    # print(run())
     # test()
     pass

@@ -21,6 +21,7 @@ import doctest
 from pathlib import Path
 from pydub import AudioSegment
 from pypinyin import pinyin, lazy_pinyin, Style
+from score.articulation_analysis import calculate_cosine_similarity
 
 lfasr_host = 'https://raasr.xfyun.cn/v2/api'
 # 请求的接口名
@@ -421,8 +422,7 @@ def findSubstringIndex(
                 return i + match_str_size - 1
             else:
                 return i
-    raise ValueError(
-        f"Failed to match the head index of string {'match_str'}, please try again")
+    return 0
 
 
 # TODO: 仍然受限于容错率问题，需要考虑使用编辑距离来编写一个新的索引函数。（也可以在findSubstringIndex函数进行改版）
@@ -432,23 +432,23 @@ def getCutPoint(
         file_name,
         threshold,
         match_str_size=20):
-    # lyrics = extractLyrics(
-    #     lyrics_dir=lyrics_dir,
-    #     file_name=file_name,
-    #     style=2)
-    # start_cut_point_index = findSubstringIndex(
-    #     w_str_result,
-    #     is_end=False,
-    #     lyrics=lyrics,
-    #     match_str_size=match_str_size,
-    #     threshold=threshold)
+    lyrics = extractLyrics(
+        lyrics_dir=lyrics_dir,
+        file_name=file_name,
+        style=2)
+    start_cut_point_index = findSubstringIndex(
+        w_str_result,
+        is_end=False,
+        lyrics=lyrics,
+        match_str_size=match_str_size,
+        threshold=threshold)
     # end_cut_point_index = findSubstringIndex(
     #     w_str_result,
     #     is_end=True,
     #     lyrics=lyrics,
     #     match_str_size=match_str_size,
     #     threshold=threshold)
-    start_cut_point_index = 0
+    # start_cut_point_index = 0
     end_cut_point_index = len(w_str_result) - 1
 
     print(
@@ -583,7 +583,7 @@ def cutAudio(
     if end_time is None:
         end_time = duration_s
     segment = audio[start_time * 1000:end_time * 1000]
-    segment.export(output_path, format="mp3")
+    segment.export(output_path, format="wav")
 
 
 if __name__ == '__main__':
