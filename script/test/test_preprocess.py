@@ -21,22 +21,22 @@ class TestprepNotation(unittest.TestCase):
             json_dir=self.json_dir, json_name=self.json_name
         )
         self.notation_dict_time = extractJson(
-            json_dir=json_dir, json_name=self.json_time_name
+            json_dir=self.json_dir, json_name=self.json_time_name
         )
         self.notation_dict_freq = extractJson(
-            json_dir=json_dir, json_name=self.json_freq_name
+            json_dir=self.json_dir, json_name=self.json_freq_name
         )
 
         self.note_sig = "G"
 
     def test_extractJson(self):
         n_dict = extractJson(json_dir=self.json_dir, json_name=self.json_name)
-        assertIsNotNone(n_dict)
+        self.assertIsNotNone(n_dict)
 
     def test_calNoteTime(self):
         t_dict = calNoteTime(eigen_dict=self.notation_dict)
         # 节拍时间转化结果是否符合预期
-        assertDictEqual(t_dict, self.notation_dict_time)
+        self.assertDictEqual(t_dict, self.notation_dict_time)
 
     def test_calNoteFreq(self):
         f_dict = calNoteFreq(
@@ -46,7 +46,7 @@ class TestprepNotation(unittest.TestCase):
             note_sig=self.note_sig,
         )
         # 音符频率转化结果是否符合预期
-        assertDictEqual(f_dict, self.notation_dict_freq)
+        self.assertDictEqual(f_dict, self.notation_dict_freq)
 
 
 class TestPrepAudio(unittest.TestCase):
