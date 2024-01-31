@@ -29,6 +29,11 @@ DATA_DIR = ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw_data"
 RESULT_DATA_DIR = DATA_DIR / "result_data"
 FREQ_CSV = "调号音符频率表.csv"
+SONGNAME_CSV = "文件歌曲表.csv"
+SCORE_CSV = "文件评分表.csv"
+RESULT_CSV = "模型结果表.csv"
+EVALUATE_CSV = "评估结果表.csv"
+INDEX_CSV = "指标结果表.csv"
 
 # eigen_json
 EIGEN_DIR = ROOT / "eigen_json"

@@ -7,9 +7,13 @@ from preprocess.prep_audio import *
 from preprocess.prep_notation import *
 
 
-class TestprepNotation(unittest.TestCase):
+class TestPrepExtract(unittest.TestCase):
     def setUp(self) -> None:
-        # extractJson
+        pass
+
+
+class TestPrepNotation(unittest.TestCase):
+    def setUp(self) -> None:
         self.json_dir = TEST_EIGEN_DIR
         self.raw_data_dir = TEST_RAWDATA_DIR
         self.json_name = "中华人民共和国国歌测试"
