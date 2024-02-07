@@ -9,7 +9,25 @@ from preprocess.prep_notation import *
 
 class TestPrepExtract(unittest.TestCase):
     def setUp(self) -> None:
-        pass
+        self.raw_data_dir = 'E:/PythonCode/Project2/data/raw_data'
+        self.freq_csv = '文件歌曲表.csv'
+        csv_path = Path(self.raw_data_dir) / self.freq_csv
+        self.sample_df = pd.read_csv(csv_path, encoding='ANSI', engine='python')
+
+    def test_audioSampling(self):
+        result_df = audioSampling(song_names=['茉', '歌', '粉'], max_samples=4)
+        # 在这里添加你的测试断言
+        self.assertEqual(len(result_df), 12)  # 检查是否返回了正确数量的行
+        self.assertTrue(all(result_df['歌曲名'].str.contains('茉|歌|粉', case=False)))  # 检查歌曲名称是否与给定的正则表达式匹配
+        self.assertTrue(all(result_df.groupby('歌曲名')['mp3文件名'].count() <= 10))  # 检查是否满足max_samples条件
+
+    def test_catSampling(self):
+        song_dict = catSampling(result_df)
+        # 测试断言
+        self.assertIn('国歌', song_dict)  # 检查 '国歌' 是否在返回的字典中
+        self.assertIsInstance(song_dict['国歌'], list)  # 检查 '国歌' 对应的值是否是列表类型
+        self.assertGreater(len(song_dict['国歌']), 0)  # 检查 '国歌' 对应的值列表是否非空
+        self.assertIn('茉莉花', song_dict)  # 检查 '茉莉花' 是否在返回的字典中
 
 
 class TestPrepNotation(unittest.TestCase):
