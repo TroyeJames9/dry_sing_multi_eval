@@ -102,10 +102,10 @@ class TestPrepAudio(unittest.TestCase):
 class TestLfasrNew(unittest.TestCase):
     def setUp(self) -> None:
         self.json_dir = TEST_RESULT_DIR
-        self.test_json_name = "orderResult_lattice.json"
-        self.result_json_name = "getWordInfoList_result.json"
+        self.test_json_name = "orderResult_lattice"
+        self.result_json_name = "getWordInfoList_result"
 
-        self.test_dict = extractJson(
+        self.test_list = extractJson(
             json_dir=self.json_dir, json_name=self.test_json_name
         )
         self.result_dict = extractJson(
@@ -113,8 +113,8 @@ class TestLfasrNew(unittest.TestCase):
         )
 
     def test_getWordInfoList(self):
-        eigen_list = getWordInfoList(transfer_json=test_dict)
-        self.assertDictEqual(eigen_list, self.result_dict)
+        eigen_dict = getWordInfoList(transfer_json=self.test_list)
+        self.assertDictEqual(eigen_dict, self.result_dict)
 
 
 if __name__ == "__main__":

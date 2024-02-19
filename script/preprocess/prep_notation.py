@@ -17,7 +17,7 @@ import json
 import pandas as pd
 
 
-def extractJson(json_dir: Path = EIGEN_DIR, json_name: str = None) -> dict:
+def extractJson(json_dir: Path = EIGEN_DIR, json_name: str = None):
     """提取json文件，将其输出为字典格式。
 
     通过指定的路径，将JSON文件的内容识别出来，并转为dict格式输出。
