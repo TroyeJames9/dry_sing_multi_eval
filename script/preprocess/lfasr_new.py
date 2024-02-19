@@ -89,6 +89,7 @@ class RequestApi(object):
         param_dict["fileName"] = file_name
         param_dict["duration"] = "200"  # 没严格限制，无需修改
         param_dict["language"] = "cn"  # 选择语言
+        param_dict["languageType"] = 4  # 语言识别模式选择,4为纯中文模式
         param_dict["hotWord"] = self.hotword  # 热词
         """
         以下为部分额外可选的传入参数，可根据需要以此形式添加参数
@@ -533,6 +534,7 @@ def getPerWordTime(transfer_json: dict) -> list:
             if cw_list["wp"] in ["n", "s"]:
                 w_value = gbkXfrFstLetter(word["cw"][0]["w"], style=0)
                 wt_list.append({w_value: w_time})
+
     return wt_list
 
 

@@ -5,6 +5,7 @@ import librosa
 from setting import *
 from preprocess.prep_audio import *
 from preprocess.prep_notation import *
+from preprocess.lfasr_new import *
 
 
 class TestPrepExtract(unittest.TestCase):
@@ -96,6 +97,24 @@ class TestPrepAudio(unittest.TestCase):
         rs_y = noiseReduce(y=self.vt_audio, sr=self.vt_sr)
         # 降噪是否生效(频域能量是否变化)
         self.assertNotEqual(np.sum(rs_y), np.sum(self.vt_audio))
+
+
+class TestLfasrNew(unittest.TestCase):
+    def setUp(self) -> None:
+        self.json_dir = TEST_RESULT_DIR
+        self.test_json_name = "orderResult_lattice.json"
+        self.result_json_name = "getWordInfoList_result.json"
+
+        self.test_dict = extractJson(
+            json_dir=self.json_dir, json_name=self.test_json_name
+        )
+        self.result_dict = extractJson(
+            json_dir=self.json_dir, json_name=self.result_json_name
+        )
+
+    def test_getWordInfoList(self):
+        eigen_list = getWordInfoList(transfer_json=test_dict)
+        self.assertDictEqual(eigen_list, self.result_dict)
 
 
 if __name__ == "__main__":

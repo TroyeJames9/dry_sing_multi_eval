@@ -15,4 +15,3 @@ noisereduce == 3.0.0
 soundfile == 0.12.1
 pandas == 2.0.3
 
-# yongjun£ºpandas
