@@ -6,6 +6,7 @@ from setting import *
 from preprocess.prep_audio import *
 from preprocess.prep_notation import *
 from preprocess.lfasr_new import *
+from preprocess.audio_eigen import *
 
 
 class TestPrepExtract(unittest.TestCase):
@@ -122,12 +123,14 @@ class TestAudioEigen(unittest.TestCase):
         self.json_dir = TEST_RESULT_DIR
         self.input_json_name = "getWordInfoList_result"
         self.audio_path = TEST_AUDIO_DIR / "song_demo.mp3"
+        self.qilai_audio_path = TEST_AUDIO_DIR / "qilai" / "qilai.wav"
         self.sr = 16000
 
         self.input_dict = extractJson(
             json_dir=self.json_dir, json_name=self.input_json_name
         )
         self.audio_seq, _ = librosa.load(self.audio_path, sr=self.sr)
+        self.qilai_audio, _ = librosa.load(self.audio_path, sr=self.sr)
 
     def test_audioWordSeg(self):
         result_list = audioWordSeg(eigen_list=self.input_dict,
@@ -139,6 +142,12 @@ class TestAudioEigen(unittest.TestCase):
         self.assertEqual(seq_duration, 1.390)
         self.assertEqual(first_word_times, 1.390)
         # 通过之后，还需要人工去听第一个词语的音频片段是否为“起来”
+
+    def test_calAudioFreq(self):
+        freq_list, times_list = calAudioFreq(reduced_noise=self.audio_seq,
+                                             sr=self.sr,
+                                             fmax=2093.0,
+                                             fmin=65.0)
 
 
 if __name__ == "__main__":
