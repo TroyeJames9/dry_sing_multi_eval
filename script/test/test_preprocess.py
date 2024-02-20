@@ -147,6 +147,8 @@ class TestAudioEigen(unittest.TestCase):
                                              sr=self.qilai_sr,
                                              fmax=2093.0,
                                              fmin=65.0)
+        self.assertEqual(len(freq_list), 1965)
+        self.assertEqual(len(times_list), 1965)
 
 
 if __name__ == "__main__":
