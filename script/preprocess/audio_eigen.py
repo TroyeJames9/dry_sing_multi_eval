@@ -12,7 +12,9 @@ import pandas as pd
 import numpy as np
 
 
-def audioWordSeg(eigen_list: dict, reduced_noise: np.ndarray, sr: int) -> dict:
+def audioWordSeg(
+    eigen_list: dict = None, reduced_noise: np.ndarray = None, sr: int = None
+) -> dict:
     """按照getWordInfoList的结果列表，以词为单位，将音频时域信息序列进行切割，eg："来"的时间间隔为1.3秒，要获取这个时间间隔内的音频信息。
 
     eigen_list：
@@ -33,10 +35,8 @@ def audioWordSeg(eigen_list: dict, reduced_noise: np.ndarray, sr: int) -> dict:
         'times': 1.3900000000000006}} ,..., {'word'....}]}
 
     """
-    with open(eigen_list, "r", encoding="gbk") as f:
-        eigen_dict = json.load(f)
 
-    eigen_list = eigen_dict["eigen_list"]
+    eigen_list = eigen_list["eigen_list"]
 
     eigen_segments = []  # 用来存储子字典eigen_segment
     """遍历JSON文件中的子字典eigen_list，获取其中的每个词的起始和结束时间，并按时间段进行切割音频，返回出np.ndarray类型"""
@@ -45,6 +45,7 @@ def audioWordSeg(eigen_list: dict, reduced_noise: np.ndarray, sr: int) -> dict:
         end_time = item["eigen"]["end_time"]
         word = item["word"]
         times = end_time - start_time
+        times = round(times, 3)
 
         # 将时间转换为样本索引
         start_sample = int(start_time * sr)
@@ -59,7 +60,7 @@ def audioWordSeg(eigen_list: dict, reduced_noise: np.ndarray, sr: int) -> dict:
             "eigen": {
                 "start_time": start_time,
                 "end_time": end_time,
-                "audio_segment": audio_segment,
+                "seg_seq": audio_segment,
                 "times": times,
             },
         }
