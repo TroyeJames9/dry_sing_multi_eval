@@ -94,7 +94,7 @@ class TestPrepAudio(unittest.TestCase):
         self.assertEqual(len(self.vt_audio), self.target_sr * duration_seconds)
         # 结果是否为单声道
         self.assertEqual(len(self.vt_audio.shape), 1)
-        rs_y = noiseReduce(y=self.vt_audio, sr=self.vt_sr)
+        rs_y, sr = noiseReduce(y=self.vt_audio, sr=self.vt_sr)
         # 降噪是否生效(频域能量是否变化)
         self.assertNotEqual(np.sum(rs_y), np.sum(self.vt_audio))
 
@@ -115,6 +115,30 @@ class TestLfasrNew(unittest.TestCase):
     def test_getWordInfoList(self):
         eigen_dict = getWordInfoList(transfer_json=self.test_list)
         self.assertDictEqual(eigen_dict, self.result_dict)
+
+
+class TestAudioEigen(unittest.TestCase):
+    def setUp(self) -> None:
+        self.json_dir = TEST_RESULT_DIR
+        self.input_json_name = "getWordInfoList_result"
+        self.audio_path = TEST_AUDIO_DIR / "song_demo.mp3"
+        self.sr = 16000
+
+        self.input_dict = extractJson(
+            json_dir=self.json_dir, json_name=self.input_json_name
+        )
+        self.audio_seq, _ = librosa.load(self.audio_path, sr=self.sr)
+
+    def test_audioWordSeg(self):
+        result_list = audioWordSeg(eigen_list=self.input_dict,
+                                   reduced_noise=self.audio_seq,
+                                   sr=self.sr)
+        first_word_seq = result_list[0]["eigen"]["seg_seq"]
+        first_word_times = result_list[0]["eigen"]["times"]
+        seq_duration = librosa.get_duration(y=first_word_seq, sr=self.sr)
+        self.assertEqual(seq_duration, 1.390)
+        self.assertEqual(first_word_times, 1.390)
+        # 通过之后，还需要人工去听第一个词语的音频片段是否为“起来”
 
 
 if __name__ == "__main__":
