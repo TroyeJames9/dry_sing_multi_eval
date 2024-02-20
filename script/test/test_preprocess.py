@@ -135,8 +135,8 @@ class TestAudioEigen(unittest.TestCase):
         result_list = audioWordSeg(eigen_list=self.input_dict,
                                    reduced_noise=self.audio_seq,
                                    sr=self.seq_sr)
-        first_word_seq = result_list[0]["eigen"]["seg_seq"]
-        first_word_times = result_list[0]["eigen"]["times"]
+        first_word_seq = result_list["eigen_list"][0]["eigen"]["seg_seq"]
+        first_word_times = result_list["eigen_list"][0]["eigen"]["times"]
         seq_duration = librosa.get_duration(y=first_word_seq, sr=self.seq_sr)
         self.assertEqual(seq_duration, 1.390)
         self.assertEqual(first_word_times, 1.390)
