@@ -98,5 +98,7 @@ def noiseReduce(
         prop_decrease=prop_decrease,
         stationary=stationary,
     )
+    vt_audio = np.asarray(reduced_noise)
+    vt_sr = sr
 
-    return reduced_noise
+    return vt_audio, vt_sr
