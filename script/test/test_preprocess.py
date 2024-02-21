@@ -129,7 +129,7 @@ class TestAudioEigen(unittest.TestCase):
             json_dir=self.json_dir, json_name=self.input_json_name
         )
         self.audio_seq, self.seq_sr = librosa.load(self.audio_path)
-        self.qilai_audio, self.qilai_sr = librosa.load(self.audio_path)
+        self.qilai_audio, self.qilai_sr = librosa.load(self.qilai_audio_path)
 
     def test_audioWordSeg(self):
         result_list = audioWordSeg(eigen_list=self.input_dict,
