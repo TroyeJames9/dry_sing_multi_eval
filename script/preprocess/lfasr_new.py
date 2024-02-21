@@ -574,5 +574,49 @@ def cutAudio(
     segment.export(output_path, format="mp3")
 
 
+def getWordInfoList(transfer_json: list) -> dict:
+    """由API转写结果json数据生成一个eigen_list字典
+
+    参数：
+        transfer_json(list):
+            downloadOrderResult函数的返回结果。
+    返回：
+        一个包含eigen_list的字典
+    """
+    # 初始化一个空列表，用于存储预处理的数据格式
+    output_list = []
+
+    # 遍历原始数据中的每个字典
+    for item in transfer_json:
+        # 提取 "json_1best" 键对应的值（一个JSON字符串）
+        json_string = item["json_1best"]
+        # 将JSON字符串解析为字典，并添加到输出列表中
+        output_list.append(eval(json_string))
+
+    # 初始化一个空列表，用于存储最终的数据格式
+    eigen_list = []
+
+    # 遍历原始数据中的每个字典
+    for item in output_list:
+        sentence_bg = float(item["st"]["bg"])
+        ws_list = item["st"]["rt"][0]["ws"]
+        for word in ws_list:
+            wb_value = word["wb"] * 10
+            we_value = word["we"] * 10
+            start_time = (sentence_bg + wb_value) / 1000
+            end_time = (sentence_bg + we_value) / 1000
+            for cw in word["cw"]:
+                if re.search(r'[\u4e00-\u9fff]', cw["w"]):  # 判断是否包含中文字符
+                    eigen_list.append({
+                        "word": cw["w"],
+                        "eigen": {
+                            "start_time": start_time,
+                            "end_time": end_time,
+                        }
+                    })
+    # 返回名为 eigen_list 的字典
+    return {"eigen_list": eigen_list}
+
+
 if __name__ == "__main__":
     doctest.testmod()
