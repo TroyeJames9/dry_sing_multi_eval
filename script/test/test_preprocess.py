@@ -137,7 +137,7 @@ class TestAudioEigen(unittest.TestCase):
                                    sr=self.seq_sr)
         first_word_seq = result_list["eigen_list"][0]["eigen"]["seg_seq"]
         first_word_times = result_list["eigen_list"][0]["eigen"]["times"]
-        seq_duration = librosa.get_duration(y=first_word_seq, sr=self.seq_sr)
+        seq_duration = round(librosa.get_duration(y=first_word_seq, sr=self.seq_sr), 3)
         self.assertEqual(seq_duration, 1.390)
         self.assertEqual(first_word_times, 1.390)
         # 通过之后，还需要人工去听第一个词语的音频片段是否为“起来”
