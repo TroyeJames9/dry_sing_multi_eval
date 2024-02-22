@@ -150,6 +150,24 @@ class TestAudioEigen(unittest.TestCase):
         self.assertEqual(len(freq_list), 1965)
         self.assertEqual(len(times_list), 1965)
 
+    def test_getWordFreqSeq(self):
+        json_dir = TEST_AUDIO_EIGEN_DIR
+        input_json_name = "word_dict"
+        result_json_name = "result"
+        freq_list = [i for i in range(1, 21, 2)]
+        times_list = [i for i in range(1, 11)]
+        delay_second = 0.15
+
+        word_dict = extractJson(
+            json_dir=json_dir, json_name=input_json_name
+        )
+        result_dict = extractJson(
+            json_dir=json_dir, json_name=result_json_name
+        )
+
+        rs_dict = getWordFreqSeq(word_dict=word_dict, Freq_list=freq_list, times_list=times_list,delay_second=delay_second)
+        self.assertDictEqual(rs_dict, result_dict)
+
 
 if __name__ == "__main__":
     unittest.main()

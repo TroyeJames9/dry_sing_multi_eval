@@ -96,5 +96,6 @@ def calAudioFreq(reduced_noise: np.ndarray, sr: int, fmax: float, fmin: float) -
     )
 
     times_list = librosa.times_like(Freq_list)
-
+    Freq_list = Freq_list.tolist()
+    times_list = times_list.tolist()
     return Freq_list, times_list
