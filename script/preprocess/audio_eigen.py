@@ -99,3 +99,42 @@ def calAudioFreq(reduced_noise: np.ndarray, sr: int, fmax: float, fmin: float) -
     Freq_list = Freq_list.tolist()
     times_list = times_list.tolist()
     return Freq_list, times_list
+
+
+def getWordFreqSeq(
+    word_dict: dict, Freq_list: list, times_list: list, delay_second: float = 0.15
+) -> dict:
+    """传入eigen_list的一个字典元素，根据start_time和end_time将该字典元素对应的歌词的基频序列保存到字典中
+
+    参数：
+        word_dict:
+            audioWordSeg返回结果中的eigen_list的一个元素，eg：{"word": "起来","eigen": {"seg_seq": null,"times": 2,"start_time": 1.85,"end_time": 3.85 }}。
+        Freq_list：
+            基频列表，calAudioFreq的返回结果。
+        times_list：
+            各基频对应的times的列表，calAudioFreq的返回结果。
+        delay_second:
+            延后的原因是科大讯飞识别的延后秒数近似常量，默认为0.15。
+
+    返回：
+        rs_dict:
+            返回一个新的字典，形如：{"word":xx, "eigen":{"seg_seq":xx,"times":xx,"start_time":xx,"end_time":xx,"Freq_seq":xx}}
+    """
+
+    # 获取子字典中"eigen"的value值
+    item = word_dict["eigen"]
+    # 将科大讯飞识别的开始和结束的时间都加上延迟秒数
+    start_time = item["start_time"] + delay_second
+    end_time = item["end_time"] + delay_second
+    # 通过科大讯飞返回的新的开始和结束的时间，获取在librosa返回的时间列表的索引
+    start_time_index = times_list.index(start_time)
+    end_time_index = times_list.index(end_time)
+    # 通过索引在Freq_seq列表中切片，切片是左包右不包，需要+1
+    Freq_seq = Freq_list[start_time_index: end_time_index + 1]
+    item["start_time"] = start_time
+    item["end_time"] = end_time
+    item["Freq_seq"] = Freq_seq
+
+    rs_dict = word_dict
+
+    return rs_dict
