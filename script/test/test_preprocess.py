@@ -161,7 +161,6 @@ class TestAudioEigen(unittest.TestCase):
         freq_list = [i for i in range(1, 21, 2)]
         times_list = [i for i in range(1, 11)]
 
-
         word_dict = extractJson(
             json_dir=json_dir, json_name=input_json_name
         )
