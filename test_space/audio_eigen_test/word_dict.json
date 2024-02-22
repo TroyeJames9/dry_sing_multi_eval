@@ -3,7 +3,7 @@
   "eigen": {
     "seg_seq": null,
     "times": 2,
-    "start_time": 2,
-    "end_time": 4
+    "start_time": 1.85,
+    "end_time": 3.85
   }
 }

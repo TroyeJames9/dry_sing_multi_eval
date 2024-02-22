@@ -157,7 +157,6 @@ class TestAudioEigen(unittest.TestCase):
         delay_second = 0.15
         freq_list = [i for i in range(1, 21, 2)]
         times_list = [i for i in range(1, 11)]
-        times_list = [x - delay_second for x in times_list]
 
         word_dict = extractJson(
             json_dir=json_dir, json_name=input_json_name
