@@ -47,11 +47,15 @@ def audioWordSeg(
     eigen_segments = []  # 用来存储子字典eigen_segment
     """遍历JSON文件中的子字典eigen_list，获取其中的每个词的起始和结束时间，并按时间段进行切割音频，返回出np.ndarray类型"""
     for item in eigen_list:
-        start_time = round(item["eigen"]["start_time"] + delay_second, 3)
-        end_time = round(item["eigen"]["end_time"] + delay_second * 0.7, 3)
-        word = item["word"]
-        times = end_time - start_time
+        times = item["eigen"]["end_time"] - item["eigen"]["start_time"]
         times = round(times, 3)
+        if len(item["word"]) > 1:
+            start_time = round(item["eigen"]["start_time"] + delay_second, 3)
+            end_time = round(item["eigen"]["end_time"] + delay_second * 0.6, 3)
+        else:
+            start_time = round(item["eigen"]["start_time"], 3)
+            end_time = round(item["eigen"]["end_time"], 3)
+        word = item["word"]
 
         # 将时间转换为样本索引
         start_sample = int(start_time * sr)
