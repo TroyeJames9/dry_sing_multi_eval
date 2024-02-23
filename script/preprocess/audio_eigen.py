@@ -47,8 +47,8 @@ def audioWordSeg(
     eigen_segments = []  # 用来存储子字典eigen_segment
     """遍历JSON文件中的子字典eigen_list，获取其中的每个词的起始和结束时间，并按时间段进行切割音频，返回出np.ndarray类型"""
     for item in eigen_list:
-        start_time = item["eigen"]["start_time"] + delay_second
-        end_time = item["eigen"]["end_time"] + delay_second
+        start_time = round(item["eigen"]["start_time"] + delay_second, 3)
+        end_time = round(item["eigen"]["end_time"] + delay_second * 0.7, 3)
         word = item["word"]
         times = end_time - start_time
         times = round(times, 3)
@@ -77,7 +77,7 @@ def audioWordSeg(
     return eigen_list
 
 
-def calAudioFreq(reduced_noise: np.ndarray, sr: int, fmax: float, fmin: float) -> list:
+def calAudioFreq(reduced_noise: np.ndarray, sr: int, fmax: float = 2093.0, fmin: float = 65.0) -> list:
     """使用Pyin算法来估计各时刻的基音频率，生成一个元组，包括基频列表和基频对应的times列表.
 
     reduced_noise:
