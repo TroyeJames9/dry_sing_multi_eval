@@ -14,7 +14,10 @@ import librosa
 
 
 def audioWordSeg(
-    eigen_list: dict = None, reduced_noise: np.ndarray = None, sr: int = None
+    eigen_list: dict = None,
+    reduced_noise: np.ndarray = None,
+    sr: int = None,
+    delay_second: float = 0.15,
 ) -> dict:
     """按照getWordInfoList的结果列表，以词为单位，将音频时域信息序列进行切割，eg："来"的时间间隔为1.3秒，要获取这个时间间隔内的音频信息。
 
@@ -24,6 +27,8 @@ def audioWordSeg(
         降噪后音频的时域信息。
     sr：
         采样率。
+    delay_second:
+        延后的原因是科大讯飞识别的延后秒数近似常量，默认为0.15。
 
     返回：
         eigen_list：
@@ -42,8 +47,8 @@ def audioWordSeg(
     eigen_segments = []  # 用来存储子字典eigen_segment
     """遍历JSON文件中的子字典eigen_list，获取其中的每个词的起始和结束时间，并按时间段进行切割音频，返回出np.ndarray类型"""
     for item in eigen_list:
-        start_time = item["eigen"]["start_time"]
-        end_time = item["eigen"]["end_time"]
+        start_time = item["eigen"]["start_time"] + delay_second
+        end_time = item["eigen"]["end_time"] + delay_second
         word = item["word"]
         times = end_time - start_time
         times = round(times, 3)
@@ -101,9 +106,7 @@ def calAudioFreq(reduced_noise: np.ndarray, sr: int, fmax: float, fmin: float) -
     return Freq_list, times_list
 
 
-def getWordFreqSeq(
-    word_dict: dict, Freq_list: list, times_list: list, delay_second: float = 0.15
-) -> dict:
+def getWordFreqSeq(word_dict: dict, Freq_list: list, times_list: list) -> dict:
     """传入eigen_list的一个字典元素，根据start_time和end_time将该字典元素对应的歌词的基频序列保存到字典中
 
     参数：
@@ -113,8 +116,7 @@ def getWordFreqSeq(
             基频列表，calAudioFreq的返回结果。
         times_list：
             各基频对应的times的列表，calAudioFreq的返回结果。
-        delay_second:
-            延后的原因是科大讯飞识别的延后秒数近似常量，默认为0.15。
+
 
     返回：
         rs_dict:
@@ -123,14 +125,12 @@ def getWordFreqSeq(
 
     # 获取子字典中"eigen"的value值
     item = word_dict["eigen"]
-    # 将科大讯飞识别的开始和结束的时间都加上延迟秒数
-    start_time = item["start_time"] + delay_second
-    end_time = item["end_time"] + delay_second
+
     # 通过科大讯飞返回的新的开始和结束的时间，获取在librosa返回的时间列表的索引
     start_time_index = times_list.index(start_time)
     end_time_index = times_list.index(end_time)
     # 通过索引在Freq_seq列表中切片，切片是左包右不包，需要+1
-    Freq_seq = Freq_list[start_time_index: end_time_index + 1]
+    Freq_seq = Freq_list[start_time_index : end_time_index + 1]
     item["start_time"] = start_time
     item["end_time"] = end_time
     item["Freq_seq"] = Freq_seq
