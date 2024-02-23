@@ -124,17 +124,14 @@ def getWordFreqSeq(word_dict: dict, Freq_list: list, times_list: list) -> dict:
     """
 
     # 获取子字典中"eigen"的value值
-    # item = word_dict["eigen"]
-    start_time = word_dict["eigen"]["start_time"]
-    end_time = word_dict["eigen"]["end_time"]
+    item = word_dict["eigen"]
+    start_time = item["start_time"]
+    end_time = item["end_time"]
 
     # 通过科大讯飞返回的新的开始和结束的时间，获取在librosa返回的时间列表的索引
-    start_time_index = times_list.index(start_time)
-    end_time_index = times_list.index(end_time)
-    # 通过索引在Freq_seq列表中切片，切片是左包右不包，需要+1
-    Freq_seq = Freq_list[start_time_index : end_time_index + 1]
-    item["start_time"] = start_time
-    item["end_time"] = end_time
+    indices = [index for index, time in enumerate(times_list) if start_time <= time <= end_time]
+    Freq_seq = [Freq_list[index] for index in indices]
+
     item["Freq_seq"] = Freq_seq
     rs_dict = word_dict
 
