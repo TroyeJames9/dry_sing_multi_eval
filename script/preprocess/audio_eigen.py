@@ -215,3 +215,31 @@ def getFreqOnset(word_dict: dict, sr: int) -> dict:
     word_dict["eigen"]["seg_time_list"] = bound_times
 
     return word_dict
+
+
+def getPerWordFeat(eigen_dict: dict) -> dict:
+    """根据getFreqOnset计算得到的seg_time_list来切割词为单位的字典到字为单位的字典。
+
+    参数：
+        eigen_dict(dict):
+            getFreqOnset的返回结果
+
+    返回：
+        一个字典列表，每个字典的结构如下：
+            word：字
+            eigen：字典，结构如下
+                times：字持续时间
+                freq：字基音频率
+    """
+    eigen = eigen_dict["eigen"]
+    seg_time_list = eigen["seg_time_list"]
+
+    # 是否切割
+    if seg_time_list:
+        if seg_time_list[0] == 0:
+
+            for seg_time in seg_time_list:
+                pass
+
+
+
