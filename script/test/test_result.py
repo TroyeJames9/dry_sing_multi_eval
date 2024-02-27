@@ -12,5 +12,5 @@ class TestResult(unittest.TestCase):
 
     def test_batchCsv2Pd(self):
         pd_dict = batchCsv2Pd(csv_dir=self.csv_dir)
-        assertEqual(set(pd_dict.keys()) == set(self.expected_pd_dict_keys))
-        assertTrue(all(isinstance(value, pd.DataFrame) for value in pd_dict.values()))
+        self.assertEqual(set(pd_dict.keys()), set(self.expected_pd_dict_keys))
+        self.assertTrue(all(isinstance(value, pd.DataFrame) for value in pd_dict.values()))
