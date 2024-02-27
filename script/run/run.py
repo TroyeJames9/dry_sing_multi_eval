@@ -5,7 +5,7 @@ import glob
 import time
 import concurrent.futures
 import asyncio
-from temp.lfasr_new import (
+from preprocess.lfasr_new import (
     downloadOrderResult,
     getTransferResult,
     getCutPoint,
@@ -35,7 +35,7 @@ def extractLyricsPart(
     is_download_seg=False,
     cut_style=2,
     extract_style=0,
-    match_str_size=5,
+    match_str_size=10,
     threshold=0.6,
     app_id=LFASR_APP_ID,
     secret_key=LFASR_SECRETKEY,
@@ -62,10 +62,11 @@ def extractLyricsPart(
     extract_result = re.sub(pattern, "", raw_extract_result)
     start_cut_point, end_cut_point = 0, len(extract_result)
     # temp，判断是否为国歌
-    cos_rs = calcCosineSimilarity(extract_result)
-    if cos_rs < 0.7:
-        temp_rs = 0
-    if is_cut and cos_rs > 0.7:
+    # cos_rs = calcCosineSimilarity(extract_result)
+    # if cos_rs < 0.7:
+    #     temp_rs = 0
+    # if is_cut and cos_rs > 0.7:
+    if is_cut:
         start_cut_point, end_cut_point = getCutPoint(
             w_str_result=w_str_result,
             file_name=lyrics_file_name,
@@ -99,7 +100,7 @@ def extractLyricsPart(
                 input_audio=upload_file_path,
             )
     lyrics_part_str = extract_result[int(start_cut_point) : int(end_cut_point + 1)]
-    return lyrics_part_str, temp_rs
+    return lyrics_part_str
 
 
 def calcCosineSimilarity(
@@ -188,7 +189,7 @@ def threadProcess(
     upload_file_path, lyrics_file_name, is_cut, is_download_seg, vectorizer_type=0
 ):
 
-    lyrics_part_str, temp_rs = extractLyricsPart(
+    lyrics_part_str = extractLyricsPart(
         upload_file_path=upload_file_path,
         lyrics_file_name=lyrics_file_name,
         is_cut=is_cut,
@@ -206,7 +207,7 @@ def threadProcess(
 def threadArticulationAnalysisV3(audio_song_name):
     folder_path = UPLOAD_FILE_DIR / audio_song_name
     lyrics_file_name = audio_song_name + ".txt"
-    mp3_files = glob.glob(os.path.join(folder_path, "*.mp3"))
+    mp3_files = glob.glob(os.path.join(folder_path, "*.wav"))
     with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
         # 使用map方法并发执行函数
         upload_file_paths = mp3_files
@@ -214,8 +215,8 @@ def threadArticulationAnalysisV3(audio_song_name):
             executor.map(
                 lambda x: threadProcess(
                     lyrics_file_name=lyrics_file_name,
-                    is_cut=True,
-                    is_download_seg=True,
+                    is_cut=False,
+                    is_download_seg=False,
                     upload_file_path=x,
                 ),
                 upload_file_paths,
@@ -227,8 +228,8 @@ def threadArticulationAnalysisV3(audio_song_name):
 def run():
 
     score_dir_list = threadArticulationAnalysisV3("国歌")
-    labels = kmeanCatogery(score_dir_list=score_dir_list, cat_num=4)
-    return labels
+    # labels = kmeanCatogery(score_dir_list=score_dir_list, cat_num=4)
+    # return labels
 
 
 def test_loop_vs_multithread():
@@ -252,8 +253,8 @@ def test():
         appid=LFASR_APP_ID,
         secret_key=LFASR_SECRETKEY,
         lyrics_dir=LYRICS_DIR,
-        lyrics_file_name="song_demo.txt",
-        upload_file_path=UPLOAD_FILE_DIR / "song_demo.mp3",
+        lyrics_file_name="上春山.txt",
+        upload_file_path=UPLOAD_FILE_DIR / "上春山.mp3",
         download_dir=DOWNLOAD_DIR,
         output_file_name=OUTPUT_JSON_NAME,
     )
@@ -261,9 +262,9 @@ def test():
 
 
 if __name__ == "__main__":
-    loopArticulationAnalysisV1('国歌')
+    # loopArticulationAnalysisV1('国歌')
     # print(threadExtractLyricsPartV3('fenHongSeDeHuiYi'))
     # test_loop_vs_multithread()
     # print(run())
-    # test()
+    test()
     pass
