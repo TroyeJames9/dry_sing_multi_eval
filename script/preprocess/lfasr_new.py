@@ -606,7 +606,8 @@ def getWordInfoList(transfer_json: list) -> dict:
             start_time = (sentence_bg + wb_value) / 1000
             end_time = (sentence_bg + we_value) / 1000
             for cw in word["cw"]:
-                if re.search(r'[\u4e00-\u9fff]', cw["w"]):  # 判断是否包含中文字符
+                pattern = re.compile(r'^[\u4e00-\u9fa5\d]+$')
+                if pattern.match(cw["w"]):
                     eigen_list.append({
                         "word": cw["w"],
                         "eigen": {
