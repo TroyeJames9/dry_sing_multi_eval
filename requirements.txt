@@ -15,3 +15,7 @@ noisereduce == 3.0.0
 soundfile == 0.12.1
 pandas == 2.0.3
 
+# funASR
+funasr == 1.0.10
+modelscope == 1.12.0
+
