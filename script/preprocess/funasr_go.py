@@ -129,3 +129,9 @@ def getWordInfoList(funasr_dict: dict) -> dict:
                 eigen_dict[i]["end_time"] = time[i][1]
 
     return eigen_dict
+
+
+if __name__ == "__main__":
+    rs_dict = funasr_run(input_audio_dataset="qilai", input_audio_name="cst.mp3")
+    eigen_dict = getWordInfoList(funasr_dict=rs_dict)
+    print(eigen_dict)
