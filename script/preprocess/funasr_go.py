@@ -116,17 +116,18 @@ def getWordInfoList(funasr_dict: dict) -> dict:
     eigen_dict = {"eigen_list": []}
 
     for i in range(len(text)):
-        eigen_dict[i] = {}
+        eigen_dict_item = {}
 
-        eigen_dict[i]["word"] = text[i]
+        eigen_dict_item["word"] = text[i]
 
+        eigen_dict_item["start_time"] = time[i][0]
         # 检验与下一个字之间的时间差，<2秒则意味着中间无明显间隔
-        if i < len(text) - 1:
-            eigen_dict[i]["start_time"] = time[i][0]
-            if time[i + 1][0] - time[i][1] <= 2000:
-                eigen_dict[i]["end_time"] = time[i + 1][0]
-            else:
-                eigen_dict[i]["end_time"] = time[i][1]
+        if (i < len(text) - 1) and (time[i + 1][0] - time[i][1] <= 2000):
+            eigen_dict_item["end_time"] = time[i + 1][0]
+        else:
+            eigen_dict_item["end_time"] = time[i][1]
+
+        eigen_dict["eigen_list"].append(eigen_dict_item)
 
     return eigen_dict
 
