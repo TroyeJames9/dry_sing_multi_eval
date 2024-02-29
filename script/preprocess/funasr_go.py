@@ -64,8 +64,8 @@ def funasr_run(
     if not download_dir.exists():
         download_dir.mkdir(parents=True)
 
-    real_audio_name = re.sub(r"\..*", "", input_audio_name)
-    json_name = real_audio_name + ".json"
+    real_audio_name = re.sub(r'\..*', '', input_audio_name)
+    json_name = real_audio_name + '.json'
     download_path = download_dir / json_name
 
     if not download_path.exists():
@@ -82,8 +82,10 @@ def funasr_run(
         elif input_mode == "parsed":
             rs_list = model.generate(input=input_parsed_audio, batch_size_s=300)
 
+        rs_dict = rs_list[0]
+
         with open(download_path, "w", encoding="gbk") as json_file:
-            json.dump(rs_list[0], json_file, indent=2, ensure_ascii=False)
+            json.dump(rs_dict, json_file, indent=2, ensure_ascii=False)
     else:
         with open(download_path, "r", encoding="gbk") as file:
             rs_dict = json.load(file)
