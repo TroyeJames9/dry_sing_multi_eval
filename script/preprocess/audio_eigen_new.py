@@ -44,7 +44,9 @@ def calAudioFreq(
     return Freq_list, times_list
 
 
-def getPerWordFeat(eigen_dict: dict, freq_list: list, times_list: list, crop_percent: float=0.2) -> dict:
+def getPerWordFeat(
+    eigen_dict: dict, freq_list: list, times_list: list, crop_percent: float = 0.2
+) -> dict:
     """根据adjustWordTime和calAudioFreq的结果来计算每个字的基频f0。
 
     参数：
@@ -70,18 +72,20 @@ def getPerWordFeat(eigen_dict: dict, freq_list: list, times_list: list, crop_per
     eigen_list = eigen_dict["eigen_list"]
     for i in range(len(eigen_list)):
         item = eigen_list[i]["eigen"]
-        times = item["end_time"]-item["start_time"]
+        times = item["end_time"] - item["start_time"]
         if times > 0.1:
-            seg_start_time = item["start_time"]+times*crop_percent
-            seg_end_time = item["end_time"]-times*crop_percent
+            seg_start_time = item["start_time"] + times * crop_percent
+            seg_end_time = item["end_time"] - times * crop_percent
 
         indices = [
-            index for index, time in enumerate(times_list) if seg_start_time <= time <= seg_end_time
+            index
+            for index, time in enumerate(times_list)
+            if seg_start_time <= time <= seg_end_time
         ]
-        freq_seq = [freq_list[index] for index in indices if not np.isnan(freq_list[index])]
+        freq_seq = [
+            freq_list[index] for index in indices if not np.isnan(freq_list[index])
+        ]
         item["freq"] = round(np.median(freq_seq), 3)
         item["times"] = round(times, 4)
 
     return eigen_dict
-
-
