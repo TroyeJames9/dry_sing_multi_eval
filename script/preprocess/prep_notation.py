@@ -69,7 +69,7 @@ def calNoteTime(eigen_dict: dict) -> dict:
 
 
 def calNoteFreq(
-    eigen_dict_t: dict, data_dir: Path, data_name: str, note_sig: str
+    eigen_dict_t: dict, data_dir: Path = RAW_DATA_DIR, data_name: str = FREQ_CSV, note_sig: str = None
 ) -> dict:
     """传入calNoteTime的输出结果,计算每个词的频率。
 
