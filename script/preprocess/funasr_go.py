@@ -64,8 +64,8 @@ def funasr_run(
     if not download_dir.exists():
         download_dir.mkdir(parents=True)
 
-    real_audio_name = re.sub(r'\..*', '', input_audio_name)
-    json_name = real_audio_name + '.json'
+    real_audio_name = re.sub(r"\..*", "", input_audio_name)
+    json_name = real_audio_name + ".json"
     download_path = download_dir / json_name
 
     if not download_path.exists():
@@ -118,16 +118,17 @@ def getWordInfoList(funasr_dict: dict) -> dict:
     eigen_dict = {"eigen_list": []}
 
     for i in range(len(text)):
-        eigen_dict_item = {}
+        eigen_dict_item = {"word": "", "eigen": {}}
+        eigen = eigen_dict_item["eigen"]
 
         eigen_dict_item["word"] = text[i]
 
-        eigen_dict_item["start_time"] = time[i][0]
+        eigen["start_time"] = round(time[i][0] / 1000, 3)
         # 检验与下一个字之间的时间差，<2秒则意味着中间无明显间隔
         if (i < len(text) - 1) and (time[i + 1][0] - time[i][1] <= 2000):
-            eigen_dict_item["end_time"] = time[i + 1][0]
+            eigen["end_time"] = round(time[i + 1][0] / 1000, 3)
         else:
-            eigen_dict_item["end_time"] = time[i][1]
+            eigen["end_time"] = round(time[i][1] / 1000, 3)
 
         eigen_dict["eigen_list"].append(eigen_dict_item)
 
