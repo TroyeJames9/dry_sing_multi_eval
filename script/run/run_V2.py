@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from setting import *
+from dtw import *
 from preprocess.audio_eigen_new import *
 from preprocess.funasr_go import *
 from preprocess.prep_notation import *
+from score.audio_score import *
 import numpy as np
 import librosa
 import copy
@@ -39,7 +41,7 @@ def getSheetMusicFeatDict(json_name: str = "国歌"):
         # 进行深拷贝
         eigen_dict_rs_copy = copy.deepcopy(eigen_dict_rs)
 
-        notation_feat_dict[key_sig_list[i]] = eigen_dict_rs_copy
+        notation_feat_dict[key_sig_list[i]] = eigen_dict_rs
 
         new_key_name = key_sig_list[i] + "/2"
         # 遍历每个 eigen 字典，将 note 键对应的值除以 2
@@ -50,6 +52,41 @@ def getSheetMusicFeatDict(json_name: str = "国歌"):
     return notation_feat_dict
 
 
+def cal_dtw_freq_and_tempo(notation_feat_dict: dict, pwf_dict: dict):
+    # 提取pwf_dict 字典里的所有times和freq，分别按顺序得到times_list和freq_list
+    freq_list = [item["eigen"]["freq"] for item in pwf_dict["eigen_list"]]
+    times_list = [item["eigen"]["times"] for item in pwf_dict["eigen_list"]]
+    z_freq_list = z_score_normalization(freq_list)
+    z_times_list = z_score_normalization(times_list)
+
+    dtw_rs_dict = {}
+
+    # 提取notation_feat_dict 字典里的所有times和note，分别按顺序得到orignal_freq_list和orignal_times_list
+    for key in notation_feat_dict.keys():
+        orignal_freq_list = [
+            np.average(item["eigen"]["note"], weights=item["eigen"]["time"])
+            for item in notation_feat_dict[key]["eigen_list"]
+        ]
+        z_orignal_freq_list = z_score_normalization(orignal_freq_list)
+        freq_dtw_rs = dtw(z_freq_list, z_orignal_freq_list, dist_method='euclidean')
+
+        orignal_times_list = [
+            np.sum(item["eigen"]["time"])
+            for item in notation_feat_dict[key]["eigen_list"]
+        ]
+        z_orignal_times_list = z_score_normalization(orignal_times_list)
+        tempo_dtw_rs = dtw(z_times_list, z_orignal_times_list, dist_method='euclidean')
+
+        dtw_rs_dict[key] = {}
+        # dtw_rs_dict[key]["freq_dist_normalized"] = freq_dtw_rs.normalizedDistance
+        # dtw_rs_dict[key]["tempo_dist_normalized"] = tempo_dtw_rs.normalizedDistance
+        dtw_rs_dict[key]["freq_dist_normalized"] = freq_dtw_rs.distance
+        dtw_rs_dict[key]["tempo_dist_normalized"] = tempo_dtw_rs.distance
+
+    return dtw_rs_dict
+
+
 if __name__ == "__main__":
-    # print(getSingleSongFeat())
-    print(getSheetMusicFeatDict())
+    pwf_dict = getSingleSongFeat(input_audio_name="qilai_4.mp3")
+    notation_feat_dict = getSheetMusicFeatDict()
+    print(cal_dtw_freq_and_tempo(notation_feat_dict, pwf_dict))

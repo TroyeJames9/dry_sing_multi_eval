@@ -85,6 +85,16 @@ def getPerWordFeat(
         freq_seq = [
             freq_list[index] for index in indices if not np.isnan(freq_list[index])
         ]
+
+        if not freq_seq:
+            indices = [
+                index
+                for index, time in enumerate(times_list)
+                if item["start_time"] <= time <= item["end_time"]
+            ]
+            freq_seq = [
+                freq_list[index] for index in indices if not np.isnan(freq_list[index])
+            ]
         item["freq"] = round(np.median(freq_seq), 3)
         item["times"] = round(times, 4)
 
