@@ -6,6 +6,7 @@ from preprocess.funasr_go import *
 from preprocess.prep_notation import *
 import numpy as np
 import librosa
+import copy
 
 
 def getSingleSongFeat(
@@ -28,17 +29,27 @@ def getSingleSongFeat(
 
 def getSheetMusicFeatDict(json_name: str = "国歌"):
     key_sig_list = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+
     notation_feat_dict = {}
     for i in range(len(key_sig_list)):
         eigen_dict = extractJson(json_name=json_name)
         eigen_dict_t = calNoteTime(eigen_dict)
         eigen_dict_rs = calNoteFreq(eigen_dict_t, note_sig=key_sig_list[i])
-        notation_feat_dict["key_sig_list[i]"] = eigen_dict_rs
+
+        # 进行深拷贝
+        eigen_dict_rs_copy = copy.deepcopy(eigen_dict_rs)
+
+        notation_feat_dict[key_sig_list[i]] = eigen_dict_rs_copy
+
+        new_key_name = key_sig_list[i] + "/2"
+        # 遍历每个 eigen 字典，将 note 键对应的值除以 2
+        for item in eigen_dict_rs_copy['eigen_list']:
+            item['eigen']['note'] = [x / 2 for x in item['eigen']['note']]
+        notation_feat_dict[new_key_name] = eigen_dict_rs_copy
 
     return notation_feat_dict
 
 
 if __name__ == "__main__":
     # print(getSingleSongFeat())
-    eigen_dict = extractJson(json_name="国歌")
-    eigen_dict_t = calNoteTime(eigen_dict)
+    print(getSheetMusicFeatDict())
