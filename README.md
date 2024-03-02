@@ -1,8 +1,8 @@
 
 
-# ProjectName
+# dry_sing_multi_eval
 
-ProjectName and Description
+Five-Dimensional Acapella Singing Evaluation System based on funASR, include pronunciation, pitch accuracy, rhythm, fluency, and emotion."
 
 <!-- PROJECT SHIELDS -->
 
@@ -18,31 +18,27 @@ ProjectName and Description
 
 <p align="center">
   <a href="https://github.com/TroyeJames9/speech_recognition/">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
-
-  <h3 align="center">"完美的"README模板</h3>
   <p align="center">
-    一个"完美的"README模板去快速开始你的项目！
     <br />
-    <a href="https://github.com/shaojintian/Best_README_template"><strong>探索本项目的文档 »</strong></a>
+    <a href="https://www.mubu.com/doc/5ZN7PfUKD9Y"><strong>探索本项目的文档 »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/shaojintian/Best_README_template">查看Demo</a>
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/blob/main/jupyter/funasr_run_single.ipynb">查看Demo</a>
     ·
-    <a href="https://github.com/shaojintian/Best_README_template/issues">报告Bug</a>
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">报告Bug</a>
     ·
-    <a href="https://github.com/shaojintian/Best_README_template/issues">提出新特性</a>
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">提出新特性</a>
   </p>
 
 </p>
 
 
- 本篇README.md面向开发者
+ This README.md is for developers and users
  
-## 目录
+## catalog
 
-- [上手指南](#上手指南)
+- [GetStart](#GetStart)
   - [开发前的配置要求](#开发前的配置要求)
   - [安装步骤](#安装步骤)
 - [文件目录说明](#文件目录说明)
@@ -55,11 +51,7 @@ ProjectName and Description
 - [作者](#作者)
 - [鸣谢](#鸣谢)
 
-### 上手指南
-
-请将所有链接中的“shaojintian/Best_README_template”改为“your_github_name/your_repository”
-
-
+### GetStart
 
 ###### 开发前的配置要求
 
@@ -160,17 +152,17 @@ xxx@xxxx
 - [xxxxxxxxxxxxxx](https://connoratherton.com/loaders)
 
 <!-- links -->
-[your-project-path]:shaojintian/Best_README_template
-[contributors-shield]: https://img.shields.io/github/contributors/shaojintian/Best_README_template.svg?style=flat-square
-[contributors-url]: https://github.com/shaojintian/Best_README_template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/shaojintian/Best_README_template.svg?style=flat-square
-[forks-url]: https://github.com/shaojintian/Best_README_template/network/members
-[stars-shield]: https://img.shields.io/github/stars/shaojintian/Best_README_template.svg?style=flat-square
-[stars-url]: https://github.com/shaojintian/Best_README_template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg?style=flat-square
-[issues-url]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg
-[license-shield]: https://img.shields.io/github/license/shaojintian/Best_README_template.svg?style=flat-square
-[license-url]: https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt
+[your-project-path]:TroyeJames9/dry_sing_multi_eval
+[contributors-shield]: https://img.shields.io/github/contributors/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
+[contributors-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
+[forks-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/network/members
+[stars-shield]: https://img.shields.io/github/stars/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
+[stars-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/stargazers
+[issues-shield]: https://img.shields.io/github/issues/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
+[issues-url]: https://img.shields.io/github/issues/TroyeJames9/dry_sing_multi_eval.svg
+[license-shield]: https://img.shields.io/github/license/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
+[license-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/shaojintian
 
