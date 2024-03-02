@@ -21,14 +21,14 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
   </a>
   <p align="center">
     <br />
-    <a href="https://www.mubu.com/doc/5ZN7PfUKD9Y"><strong>探索本项目的文档 »</strong></a>
+    <a href="https://www.mubu.com/doc/5ZN7PfUKD9Y"><strong>Explore the doc of this project »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/blob/main/jupyter/funasr_run_single.ipynb">查看Demo</a>
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/blob/main/jupyter/funasr_run_single.ipynb">Start demo</a>
     ·
-    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">报告Bug</a>
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">Report bug</a>
     ·
-    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">提出新特性</a>
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">Propose new features</a>
   </p>
 
 </p>
@@ -38,7 +38,7 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
  
 ## catalog
 
-- [GetStart](#GetStart)
+- [Get Start](#Get Start)
   - [开发前的配置要求](#开发前的配置要求)
   - [安装步骤](#安装步骤)
 - [文件目录说明](#文件目录说明)
@@ -51,7 +51,7 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
 - [作者](#作者)
 - [鸣谢](#鸣谢)
 
-### GetStart
+### Get Start
 
 ###### 开发前的配置要求
 
