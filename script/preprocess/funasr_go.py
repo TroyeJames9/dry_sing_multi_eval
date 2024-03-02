@@ -20,6 +20,8 @@ def funasr_run(
     input_audio_dir: Path = UPLOAD_FILE_DIR,
     input_audio_dataset: str = None,
     input_audio_name: str = None,
+    input_scp_dir: Path = SCP_DATA_DIR,
+    song_name: str = "guoge",
     input_parsed_audio: np.ndarray = None,
     input_mode: str = "file",
     download_json_dir: Path = DOWNLOAD_DIR,
@@ -60,13 +62,18 @@ def funasr_run(
     """
     if input_audio_name is not None:
         path_str = str(input_audio_dir / input_audio_dataset / input_audio_name)
-    download_dir = download_json_dir / input_audio_dataset
-    if not download_dir.exists():
-        download_dir.mkdir(parents=True)
+        download_dir = download_json_dir / input_audio_dataset
+        if not download_dir.exists():
+            download_dir.mkdir(parents=True)
 
-    real_audio_name = re.sub(r"\..*", "", input_audio_name)
-    json_name = real_audio_name + ".json"
-    download_path = download_dir / json_name
+        real_audio_name = re.sub(r"\..*", "", input_audio_name)
+        json_name = real_audio_name + ".json"
+        download_path = download_dir / json_name
+
+    else:
+        """temp"""
+        json_name = song_name + ".json"
+        download_path = download_json_dir / json_name
 
     if not download_path.exists():
         model = AutoModel(
@@ -79,11 +86,15 @@ def funasr_run(
         )
         if input_mode == "file":
             rs_list = model.generate(input=path_str, batch_size_s=300)
+            rs_dict = rs_list[0]
         elif input_mode == "parsed":
             rs_list = model.generate(input=input_parsed_audio, batch_size_s=300)
-
-        rs_dict = rs_list[0]
-
+            rs_dict = rs_list[0]
+        elif input_mode == "scp":
+            scp_name = song_name + ".scp"
+            scp_path = str(input_scp_dir / scp_name)
+            rs_list = model.generate(input=scp_path, bath_size_s=300)
+            rs_dict = {"scp_rs": rs_list}
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(rs_dict, json_file, indent=2, ensure_ascii=False)
     else:
@@ -137,5 +148,6 @@ def getWordInfoList(funasr_dict: dict) -> dict:
 
 if __name__ == "__main__":
     rs_dict = funasr_run(input_audio_dataset="qilai", input_audio_name="cst.mp3")
+    # rs_dict = funasr_run(song_name="guoge", input_mode="scp")
     eigen_dict = getWordInfoList(funasr_dict=rs_dict)
     print(eigen_dict)

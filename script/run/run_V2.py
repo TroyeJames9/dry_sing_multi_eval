@@ -2,6 +2,7 @@
 
 from setting import *
 from dtw import *
+from preprocess.prep_extract import *
 from preprocess.audio_eigen_new import *
 from preprocess.funasr_go import *
 from preprocess.prep_notation import *
@@ -29,7 +30,7 @@ def getSingleSongFeat(
     return pwf_dict
 
 
-def getSheetMusicFeatDict(json_name: str = "国歌"):
+def getSheetMusicFeatDict(json_name: str = "guoge"):
     key_sig_list = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
     notation_feat_dict = {}
@@ -45,14 +46,14 @@ def getSheetMusicFeatDict(json_name: str = "国歌"):
 
         new_key_name = key_sig_list[i] + "/2"
         # 遍历每个 eigen 字典，将 note 键对应的值除以 2
-        for item in eigen_dict_rs_copy['eigen_list']:
-            item['eigen']['note'] = [x / 2 for x in item['eigen']['note']]
+        for item in eigen_dict_rs_copy["eigen_list"]:
+            item["eigen"]["note"] = [x / 2 for x in item["eigen"]["note"]]
         notation_feat_dict[new_key_name] = eigen_dict_rs_copy
 
     return notation_feat_dict
 
 
-def cal_dtw_freq_and_tempo(notation_feat_dict: dict, pwf_dict: dict):
+def calDtwFreqAndTempo(notation_feat_dict: dict, pwf_dict: dict):
     # 提取pwf_dict 字典里的所有times和freq，分别按顺序得到times_list和freq_list
     freq_list = [item["eigen"]["freq"] for item in pwf_dict["eigen_list"]]
     times_list = [item["eigen"]["times"] for item in pwf_dict["eigen_list"]]
@@ -68,14 +69,14 @@ def cal_dtw_freq_and_tempo(notation_feat_dict: dict, pwf_dict: dict):
             for item in notation_feat_dict[key]["eigen_list"]
         ]
         z_orignal_freq_list = z_score_normalization(orignal_freq_list)
-        freq_dtw_rs = dtw(z_freq_list, z_orignal_freq_list, dist_method='euclidean')
+        freq_dtw_rs = dtw(z_freq_list, z_orignal_freq_list, dist_method="euclidean")
 
         orignal_times_list = [
             np.sum(item["eigen"]["time"])
             for item in notation_feat_dict[key]["eigen_list"]
         ]
         z_orignal_times_list = z_score_normalization(orignal_times_list)
-        tempo_dtw_rs = dtw(z_times_list, z_orignal_times_list, dist_method='euclidean')
+        tempo_dtw_rs = dtw(z_times_list, z_orignal_times_list, dist_method="euclidean")
 
         dtw_rs_dict[key] = {}
         # dtw_rs_dict[key]["freq_dist_normalized"] = freq_dtw_rs.normalizedDistance
@@ -86,7 +87,16 @@ def cal_dtw_freq_and_tempo(notation_feat_dict: dict, pwf_dict: dict):
     return dtw_rs_dict
 
 
+# TODO
+def calDtwFreqAndTempo_V2():
+    """
+    考虑半音之间的等比数列关系，考虑计算相邻歌词的频率比例作为一个序列来计算DTW
+    局限性：只衡量了音准水平，没有衡量音高稳定性
+    详见幕布笔记https://mubu.com/app/edit/home/7k-eZzNDgw0#o-72giuusrjB
+    """
+
+
 if __name__ == "__main__":
     pwf_dict = getSingleSongFeat(input_audio_name="qilai_4.mp3")
     notation_feat_dict = getSheetMusicFeatDict()
-    print(cal_dtw_freq_and_tempo(notation_feat_dict, pwf_dict))
+    print(calDtwFreqAndTempo(notation_feat_dict, pwf_dict))

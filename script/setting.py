@@ -28,6 +28,7 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 DATA_DIR = ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw_data"
 RESULT_DATA_DIR = DATA_DIR / "result_data"
+SCP_DATA_DIR = DATA_DIR / "scp"
 FREQ_CSV = "调号音符频率表.csv"
 SONGNAME_CSV = "文件歌曲表.csv"
 SCORE_CSV = "文件评分表.csv"

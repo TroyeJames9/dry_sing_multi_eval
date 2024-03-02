@@ -30,9 +30,9 @@ class TestPrepExtract(unittest.TestCase):
     def test_catSampling(self):
         song_dict = catSampling(result_df)
         # 测试断言
-        self.assertIn("国歌", song_dict)  # 检查 '国歌' 是否在返回的字典中
-        self.assertIsInstance(song_dict["国歌"], list)  # 检查 '国歌' 对应的值是否是列表类型
-        self.assertGreater(len(song_dict["国歌"]), 0)  # 检查 '国歌' 对应的值列表是否非空
+        self.assertIn("guoge", song_dict)  # 检查 'guoge' 是否在返回的字典中
+        self.assertIsInstance(song_dict["guoge"], list)  # 检查 'guoge' 对应的值是否是列表类型
+        self.assertGreater(len(song_dict["guoge"]), 0)  # 检查 'guoge' 对应的值列表是否非空
         self.assertIn("茉莉花", song_dict)  # 检查 '茉莉花' 是否在返回的字典中
 
 

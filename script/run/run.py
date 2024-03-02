@@ -227,7 +227,7 @@ def threadArticulationAnalysisV3(audio_song_name):
 
 def run():
 
-    score_dir_list = threadArticulationAnalysisV3("国歌")
+    score_dir_list = threadArticulationAnalysisV3("guoge")
     # labels = kmeanCatogery(score_dir_list=score_dir_list, cat_num=4)
     # return labels
 
@@ -262,7 +262,7 @@ def test():
 
 
 if __name__ == "__main__":
-    # loopArticulationAnalysisV1('国歌')
+    # loopArticulationAnalysisV1('guoge')
     # print(threadExtractLyricsPartV3('fenHongSeDeHuiYi'))
     # test_loop_vs_multithread()
     # print(run())

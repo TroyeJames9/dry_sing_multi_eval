@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import re
 import logging
+import glob
 from setting import *
 
 # 配置日志记录器
@@ -17,7 +18,7 @@ def audioSampling(
     参数：
     - csv_dir: 包含音频数据的CSV文件所在目录的绝对路径，默认为RAW_DATA_DIR
     - csv_name: 包含音频数据的CSV文件名称，默认为SONGNAME_CSV
-    - song_names: 用于匹配曲目名称的正则表达式列表，默认为['国歌', '茉莉花']
+    - song_names: 用于匹配曲目名称的正则表达式列表，默认为['guoge', '茉莉花']
     - max_samples: 每个曲目最大抽取的数据行数，默认为5
 
     返回：
@@ -75,6 +76,39 @@ def catSampling(result_df):
     return song_dict
 
 
+def tempCatSampling():
+    """由于切割算法未竣工，暂时获取已切割好的705首国歌来直接照搬catSampling的输出格式"""
+    sampling_dict = {}
+    folder_path = UPLOAD_FILE_DIR / "guoge"
+
+    # sampling_dict["guoge"] = glob.glob(os.path.join(folder_path, "*.wav"))
+    sampling_dict["guoge"] = [os.path.abspath(os.path.join(folder_path, filename)) for filename in os.listdir(folder_path)]
+
+    return sampling_dict
+
+
+def getScpFile(sampling_dict: dict, scp_dir: Path = SCP_DATA_DIR):
+    for song_name in sampling_dict.keys():
+        files_list = sampling_dict[song_name]
+        scp_dict = {}
+        for file_path in files_list:
+            file_name = os.path.basename(file_path)
+            file_name = re.sub(r'\..*', '', file_name)
+            scp_dict[file_name] = file_path
+
+        scp_name = song_name + ".scp"
+        scp_path = scp_dir / scp_name
+        if os.path.exists(scp_path):
+            # 如果文件存在，则清空文件内容
+            open(scp_path, 'w').close()
+        with open(scp_path, 'w') as f:
+            for key, value in scp_dict.items():
+                value = value.replace("\\", "/")
+                f.write(f"{key} {value}\n")
+
+    return scp_dict
+
+
 if __name__ == "__main__":
-    # catSampling(result_df)
-    result_df = audioSampling(song_names=["茉", "歌", "粉"], max_samples=5)
+    sampling_dict = tempCatSampling()
+    getScpFile(sampling_dict)
