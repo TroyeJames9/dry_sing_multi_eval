@@ -42,14 +42,8 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
   - [Pre-development configuration requirements](#Pre-development_configuration_requirements)
   - [Usage](#Usage)
 - [Directory structure](#Directory_structure)
-- [开发的架构](#开发的架构)
-- [部署](#部署)
-- [使用到的框架](#使用到的框架)
-- [贡献者](#贡献者)
-  - [如何参与开源项目](#如何参与开源项目)
-- [版本控制](#版本控制)
-- [作者](#作者)
-- [鸣谢](#鸣谢)
+- [How to contribute](#How_to_contribute)
+  - [How to Contribute to Open Source Projects](#How_to_Contribute_to_Open_Source_Projects)
 
 ### Get Start
 
@@ -90,23 +84,13 @@ filetree
 
 ```
 
-### 部署
+### How to contribute
 
-暂无
+Please read the [doc](https://www.mubu.com/doc/5ZN7PfUKD9Y) to understand the project guidelines, and develop according to the project standards before submitting a pull request (PR).
 
-### 使用到的框架
+#### How to Contribute to Open Source Projects
 
-- [xxxxxxx](https://getbootstrap.com)
-- [xxxxxxx](https://jquery.com)
-- [xxxxxxx](https://laravel.com)
-
-### 贡献者
-
-请阅读**CONTRIBUTING.md** 查阅为该项目做出贡献的开发者。
-
-#### 如何参与开源项目
-
-贡献使开源社区成为一个学习、激励和创造的绝佳场所。你所作的任何贡献都是**非常感谢**的。
+Contributions make the open-source community an excellent place for learning, inspiration, and creativity. Thank you very much for any contributions you make.
 
 
 1. Fork the Project
@@ -115,33 +99,9 @@ filetree
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+### Copyright
 
-
-### 版本控制
-
-该项目使用Git进行版本管理。您可以在repository参看当前可用版本。
-
-### 作者
-
-xxx@xxxx
-
-知乎:xxxx  &ensp; qq:xxxxxx    
-
- *您也可以在贡献者名单中参看所有参与该项目的开发者。*
-
-### 版权说明
-
-该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt)
-
-### 鸣谢
-
-
-- [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-- [Img Shields](https://shields.io)
-- [Choose an Open Source License](https://choosealicense.com)
-- [GitHub Pages](https://pages.github.com)
-- [Animate.css](https://daneden.github.io/animate.css)
-- [xxxxxxxxxxxxxx](https://connoratherton.com/loaders)
+The project is licensed under the GNU License. Please refer to the [LICENSE.txt](https://github.com/TroyeJames9/dry_sing_multi_eval/LICENSE.txt) for details. 
 
 <!-- links -->
 [your-project-path]:TroyeJames9/dry_sing_multi_eval
@@ -154,7 +114,7 @@ xxx@xxxx
 [issues-shield]: https://img.shields.io/github/issues/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
 [issues-url]: https://img.shields.io/github/issues/TroyeJames9/dry_sing_multi_eval.svg
 [license-shield]: https://img.shields.io/github/license/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
-[license-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/blob/master/LICENSE.txt
+[license-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/shaojintian
 
