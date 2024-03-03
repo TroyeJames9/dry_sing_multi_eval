@@ -39,8 +39,8 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
 ## catalog
 
 - [Get Start](#Get Start)
-  - [开发前的配置要求](#开发前的配置要求)
-  - [安装步骤](#安装步骤)
+  - [Pre-development configuration requirements](#Pre-development_configuration_requirements)
+  - [Usage](#Usage)
 - [文件目录说明](#文件目录说明)
 - [开发的架构](#开发的架构)
 - [部署](#部署)
@@ -53,12 +53,14 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
 
 ### Get Start
 
-###### 开发前的配置要求
+###### **Pre-development configuration requirements**
 
-1. xxxxx x.x.x
-2. xxxxx x.x.x
+1. **Python Version:** This project requires Python 3.x. recommend python 3.8
+2. **Package Dependencies:** You can find the list of required packages in the requirements.txt file. Run `pip install -r requirements.txt` in terminal Located in the project root directory to install.Please note that this project also requires manual installation of the required versions of PyTorch as specified in the requirements.txt file. The default version is 1.8.2, and the version should not be greater than or equal to 2.x.x.
+3. **Development Environment:** Set up your development environment with your preferred code editor or IDE. However, some imports in this project rely on the "source root" setting in PyCharm. It is recommended to use PyCharm for optimal functionality.In PyCharm, it is necessary to set `dry_sing_multi_eval/script` as the source root to ensure that the scripts run correctly.
+4. **Access to Resources:** Due to the sensitive nature of the audio dataset used in this project, it cannot be publicly disclosed.samples in the `audio/qilai` are provided.If you intend to use this project with publicly available datasets, please ensure that the format of the input data matches the requirements of the scoring system. The required format for input data is as follows (TODO).
 
-###### **安装步骤**
+###### **Usage**
 
 1. Get a free API Key at [https://example.com](https://example.com)
 2. Clone the repo
