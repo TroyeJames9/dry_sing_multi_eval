@@ -29,6 +29,8 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
     <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">Report bug</a>
     ·
     <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/issues">Propose new features</a>
+    ·
+    <a href="https://github.com/TroyeJames9/dry_sing_multi_eval/releases/">Stable release</a>
   </p>
 
 </p>
