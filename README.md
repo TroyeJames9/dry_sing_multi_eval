@@ -38,83 +38,59 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
  
 ## catalog
 
-- [Get Start](#Get Start)
-  - [开发前的配置要求](#开发前的配置要求)
-  - [安装步骤](#安装步骤)
-- [文件目录说明](#文件目录说明)
-- [开发的架构](#开发的架构)
-- [部署](#部署)
-- [使用到的框架](#使用到的框架)
-- [贡献者](#贡献者)
-  - [如何参与开源项目](#如何参与开源项目)
-- [版本控制](#版本控制)
-- [作者](#作者)
-- [鸣谢](#鸣谢)
+- [Get Start](#Get_Start)
+  - [Pre-development configuration requirements](#Pre-development_configuration_requirements)
+  - [Usage](#Usage)
+- [Directory structure](#Directory_structure)
+- [How to contribute](#How_to_contribute)
+  - [How to Contribute to Open Source Projects](#How_to_Contribute_to_Open_Source_Projects)
 
 ### Get Start
 
-###### 开发前的配置要求
+###### **Pre-development configuration requirements**
 
-1. xxxxx x.x.x
-2. xxxxx x.x.x
+1. **Python Version:** This project requires Python 3.x. recommend python 3.8
+2. **Package Dependencies:** You can find the list of required packages in the requirements.txt file. Run `pip install -r requirements.txt` in terminal Located in the project root directory to install.Please note that this project also requires manual installation of the required versions of PyTorch as specified in the requirements.txt file. The default version is 1.8.2, and the version should not be greater than or equal to 2.x.x.
+3. **Development Environment:** Set up your development environment with your preferred code editor or IDE. However, some imports in this project rely on the "source root" setting in PyCharm. It is recommended to use PyCharm for optimal functionality.In PyCharm, it is necessary to set `dry_sing_multi_eval/script` as the source root to ensure that the scripts run correctly.
+4. **Access to Resources:** Due to the sensitive nature of the audio dataset used in this project, it cannot be publicly disclosed.samples in the `audio/qilai` are provided.If you intend to use this project with publicly available datasets, please ensure that the format of the input data matches the requirements of the scoring system. The required format for input data is as follows (TODO).
 
-###### **安装步骤**
+###### **Usage**
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. To verify that the development environment is properly configured and to understand the design philosophy of this project, you can run `funasr_run_single` in Jupyter Lab. This script is designed to demonstrate the functionality of the system and provide insights into its design principles.
+2. TODO
 
-```sh
-git clone https://github.com/shaojintian/Best_README_template.git
-```
-
-### 文件目录说明
-eg:
+### Directory structure
 
 ```
 filetree 
-├── ARCHITECTURE.md
-├── LICENSE.txt
-├── README.md
-├── /account/
-├── /bbs/
-├── /docs/
-│  ├── /rules/
-│  │  ├── backend.txt
-│  │  └── frontend.txt
-├── manage.py
-├── /oa/
-├── /static/
-├── /templates/
-├── useless.md
-└── /util/
+├── audio/ 
+│  ├── /{dataset_name}/
+│  │  ├── example.wav
+├── data/
+├── eigen_json/ # dimensional data of each song Rhythm and notes.
+├── jupyter/ 
+├── orderResult_example/ # Sample output results from different ASR algorithms.
+├── script/
+│  ├── /setting.py # All cross-file global variables are computed and assigned by this module.
+│  ├── /preprocess/ 
+│  │  ├── funasr_go.py
+│  │  └── ...
+│  ├── /result/
+│  │  ├── dataframe_op.py
+├── resultJson/ # JSON of ASR recognition results.
+├── test_space/ # Test script scaffold.
+├── requirements.txt
+├── style_guide.py # Style Guide Example for the Project
 
 ```
 
+### How to contribute
 
+Please read the [doc](https://www.mubu.com/doc/5ZN7PfUKD9Y) to understand the project guidelines, and develop according to the project standards before submitting a pull request (PR).
 
+#### How to Contribute to Open Source Projects
 
-
-### 开发的架构 
-
-请阅读[ARCHITECTURE.md](https://github.com/shaojintian/Best_README_template/blob/master/ARCHITECTURE.md) 查阅为该项目的架构。
-
-### 部署
-
-暂无
-
-### 使用到的框架
-
-- [xxxxxxx](https://getbootstrap.com)
-- [xxxxxxx](https://jquery.com)
-- [xxxxxxx](https://laravel.com)
-
-### 贡献者
-
-请阅读**CONTRIBUTING.md** 查阅为该项目做出贡献的开发者。
-
-#### 如何参与开源项目
-
-贡献使开源社区成为一个学习、激励和创造的绝佳场所。你所作的任何贡献都是**非常感谢**的。
+Contributions make the open-source community an excellent place for learning, inspiration, and creativity. Thank you very much for any contributions you make.
 
 
 1. Fork the Project
@@ -123,33 +99,9 @@ filetree
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+### Copyright
 
-
-### 版本控制
-
-该项目使用Git进行版本管理。您可以在repository参看当前可用版本。
-
-### 作者
-
-xxx@xxxx
-
-知乎:xxxx  &ensp; qq:xxxxxx    
-
- *您也可以在贡献者名单中参看所有参与该项目的开发者。*
-
-### 版权说明
-
-该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt)
-
-### 鸣谢
-
-
-- [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-- [Img Shields](https://shields.io)
-- [Choose an Open Source License](https://choosealicense.com)
-- [GitHub Pages](https://pages.github.com)
-- [Animate.css](https://daneden.github.io/animate.css)
-- [xxxxxxxxxxxxxx](https://connoratherton.com/loaders)
+The project is licensed under the GNU License. Please refer to the [LICENSE.txt](https://github.com/TroyeJames9/dry_sing_multi_eval/LICENSE.txt) for details. 
 
 <!-- links -->
 [your-project-path]:TroyeJames9/dry_sing_multi_eval
@@ -162,7 +114,7 @@ xxx@xxxx
 [issues-shield]: https://img.shields.io/github/issues/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
 [issues-url]: https://img.shields.io/github/issues/TroyeJames9/dry_sing_multi_eval.svg
 [license-shield]: https://img.shields.io/github/license/TroyeJames9/dry_sing_multi_eval.svg?style=flat-square
-[license-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/blob/master/LICENSE.txt
+[license-url]: https://github.com/TroyeJames9/dry_sing_multi_eval/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/shaojintian
 
