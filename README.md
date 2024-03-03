@@ -38,10 +38,10 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
  
 ## catalog
 
-- [Get Start](#Get Start)
+- [Get Start](#Get_Start)
   - [Pre-development configuration requirements](#Pre-development_configuration_requirements)
   - [Usage](#Usage)
-- [文件目录说明](#文件目录说明)
+- [Directory structure](#Directory_structure)
 - [开发的架构](#开发的架构)
 - [部署](#部署)
 - [使用到的框架](#使用到的框架)
@@ -62,43 +62,33 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
 
 ###### **Usage**
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. To verify that the development environment is properly configured and to understand the design philosophy of this project, you can run `funasr_run_single` in Jupyter Lab. This script is designed to demonstrate the functionality of the system and provide insights into its design principles.
+2. TODO
 
-```sh
-git clone https://github.com/shaojintian/Best_README_template.git
-```
-
-### 文件目录说明
-eg:
+### Directory structure
 
 ```
 filetree 
-├── ARCHITECTURE.md
-├── LICENSE.txt
-├── README.md
-├── /account/
-├── /bbs/
-├── /docs/
-│  ├── /rules/
-│  │  ├── backend.txt
-│  │  └── frontend.txt
-├── manage.py
-├── /oa/
-├── /static/
-├── /templates/
-├── useless.md
-└── /util/
+├── audio/ 
+│  ├── /{dataset_name}/
+│  │  ├── example.wav
+├── data/
+├── eigen_json/ # dimensional data of each song Rhythm and notes.
+├── jupyter/ 
+├── orderResult_example/ # Sample output results from different ASR algorithms.
+├── script/
+│  ├── /setting.py # All cross-file global variables are computed and assigned by this module.
+│  ├── /preprocess/ 
+│  │  ├── funasr_go.py
+│  │  └── ...
+│  ├── /result/
+│  │  ├── dataframe_op.py
+├── resultJson/ # JSON of ASR recognition results.
+├── test_space/ # Test script scaffold.
+├── requirements.txt
+├── style_guide.py # Style Guide Example for the Project
 
 ```
-
-
-
-
-
-### 开发的架构 
-
-请阅读[ARCHITECTURE.md](https://github.com/shaojintian/Best_README_template/blob/master/ARCHITECTURE.md) 查阅为该项目的架构。
 
 ### 部署
 
