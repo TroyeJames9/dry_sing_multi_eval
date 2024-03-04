@@ -86,15 +86,13 @@ def funasr_run(
         )
         if input_mode == "file":
             rs_list = model.generate(input=path_str, batch_size_s=300)
-            rs_dict = rs_list[0]
         elif input_mode == "parsed":
             rs_list = model.generate(input=input_parsed_audio, batch_size_s=300)
-            rs_dict = rs_list[0]
         elif input_mode == "scp":
             scp_name = song_name + ".scp"
             scp_path = str(input_scp_dir / scp_name)
             rs_list = model.generate(input=scp_path, bath_size_s=300)
-            rs_dict = {"scp_rs": rs_list}
+        rs_dict = {"scp_rs": rs_list}
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(rs_dict, json_file, indent=2, ensure_ascii=False)
     else:

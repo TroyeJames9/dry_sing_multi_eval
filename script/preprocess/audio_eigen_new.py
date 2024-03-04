@@ -76,6 +76,9 @@ def getPerWordFeat(
         if times > 0.1:
             seg_start_time = item["start_time"] + times * crop_percent
             seg_end_time = item["end_time"] - times * crop_percent
+        else:
+            seg_start_time = item["start_time"]
+            seg_end_time = item["end_time"]
 
         indices = [
             index
@@ -95,7 +98,9 @@ def getPerWordFeat(
             freq_seq = [
                 freq_list[index] for index in indices if not np.isnan(freq_list[index])
             ]
-        item["freq"] = round(np.median(freq_seq), 3)
-        item["times"] = round(times, 4)
+
+        if freq_seq:
+            item["freq"] = round(np.median(freq_seq), 3)
+            item["times"] = round(times, 4)
 
     return eigen_dict
