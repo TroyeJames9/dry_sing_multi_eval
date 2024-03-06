@@ -102,5 +102,9 @@ def getPerWordFeat(
         if freq_seq:
             item["freq"] = round(np.median(freq_seq), 3)
             item["times"] = round(times, 4)
+        else:
+            eigen_list[i] = 0
+
+    eigen_dict["eigen_list"] = [item for item in eigen_list if isinstance(item, dict)]
 
     return eigen_dict
