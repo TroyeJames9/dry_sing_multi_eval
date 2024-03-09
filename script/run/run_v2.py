@@ -162,4 +162,6 @@ def main(
 
 
 if __name__ == "__main__":
+    sampling_dict = tempCatSampling("qilai")
+    getScpFile(sampling_dict)
     main("qilai", "qilai")
