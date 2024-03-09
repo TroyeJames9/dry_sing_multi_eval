@@ -16,9 +16,9 @@ import pandas as pd
 
 
 def batch_funasr_run(
-    input_audio_dataset: str = "qilai",
+    input_audio_dataset: str = None,
     input_audio_name: str = None,
-    song_name: str = "guoge",
+    song_name: str = None,
     input_mode: str = "file",
 ):
     rs_dict = funasr_run(

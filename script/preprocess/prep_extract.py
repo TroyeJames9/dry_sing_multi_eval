@@ -76,13 +76,17 @@ def catSampling(result_df):
     return song_dict
 
 
-def tempCatSampling():
+def tempCatSampling(input_audio_dataset: str):
     """由于切割算法未竣工，暂时获取已切割好的705首国歌来直接照搬catSampling的输出格式"""
     sampling_dict = {}
-    folder_path = UPLOAD_FILE_DIR / "guoge"
+    folder_path = UPLOAD_FILE_DIR / input_audio_dataset
 
     # sampling_dict["guoge"] = glob.glob(os.path.join(folder_path, "*.wav"))
-    sampling_dict["guoge"] = [os.path.abspath(os.path.join(folder_path, filename)) for filename in os.listdir(folder_path)]
+    sampling_dict[input_audio_dataset] = [
+        os.path.abspath(os.path.join(folder_path, filename))
+        for filename in os.listdir(folder_path)
+        if filename.endswith('.mp3')
+    ]
 
     return sampling_dict
 
@@ -110,5 +114,5 @@ def getScpFile(sampling_dict: dict, scp_dir: Path = SCP_DATA_DIR):
 
 
 if __name__ == "__main__":
-    sampling_dict = tempCatSampling()
+    sampling_dict = tempCatSampling("qilai")
     getScpFile(sampling_dict)
