@@ -85,7 +85,7 @@ def tempCatSampling(input_audio_dataset: str):
     sampling_dict[input_audio_dataset] = [
         os.path.abspath(os.path.join(folder_path, filename))
         for filename in os.listdir(folder_path)
-        if filename.endswith('.mp3')
+        if filename.endswith('.wav')
     ]
 
     return sampling_dict
