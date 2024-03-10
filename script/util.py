@@ -3,6 +3,7 @@ import concurrent.futures
 import multiprocessing
 import psutil
 import csv
+from pypinyin import pinyin, lazy_pinyin, Style
 from setting import *
 
 
@@ -37,3 +38,34 @@ def writeCsv(write_dict_list: list, csv_dir: Path, csv_name: str):
             writer.writerows(write_dict_list)
 
     print("CSV文件已创建或更新：", csv_file_path)
+
+
+def gbkXfrFstLetter(gbk_str: str, style: int) -> str:
+    """转换给定的GBK编码字符串。
+
+    参数：
+        gbk_str(str)：
+            待转换的GBK字符串。
+        style(int)：
+            三种转换风格，分别为{0=不转换, 1=拼音, 2=拼音首字母}。
+
+    返回：
+        转换后的字符串。
+
+    >>> gbkXfrFstLetter('我的祖国', 0)
+    '我的祖国'
+    >>> gbkXfrFstLetter('我的祖国', 1)
+    'wo de zu guo'
+    >>> gbkXfrFstLetter('我的祖国', 2)
+    'wdzg'
+    """
+    if style == 0:
+        return gbk_str
+    elif style == 1:
+        pinyin_list = lazy_pinyin(gbk_str)
+        pinyin_result = " ".join("".join(inner_list) for inner_list in pinyin_list)
+    elif style == 2:
+        pinyin_list = pinyin(gbk_str, style=Style.FIRST_LETTER)
+        pinyin_result = "".join("".join(inner_list) for inner_list in pinyin_list)
+    reg_pinyin_result = re.sub(r"[^a-z\s]", "", pinyin_result)
+    return reg_pinyin_result
