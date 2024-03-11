@@ -18,13 +18,13 @@ import pandas as pd
 def batch_funasr_run(
     input_audio_dataset: str = None,
     input_audio_name: str = None,
-    song_name: str = None,
+    scp_name: str = None,
     input_mode: str = "file",
 ):
     rs_dict = funasr_run(
         input_audio_dataset=input_audio_dataset,
         input_audio_name=input_audio_name,
-        song_name=song_name,
+        scp_name=scp_name,
         input_mode=input_mode,
     )
     rs_dict_list = rs_dict["scp_rs"]
@@ -147,12 +147,12 @@ def calDtwFreqAndTempo_V2():
 
 def main(
     input_audio_dataset="guoge",
-    song_name="guoge",
+    scp_name="guoge",
     input_mode="scp",
 ):
     rs_dict_list = batch_funasr_run(
         input_audio_dataset=input_audio_dataset,
-        song_name=song_name,
+        scp_name=scp_name,
         input_mode=input_mode,
     )
     getSongFeat_new = partial(getSongFeat, input_audio_dataset=input_audio_dataset)

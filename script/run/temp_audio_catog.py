@@ -25,7 +25,8 @@ def extract_lyrics_contents(folder_path):
     return txt_contents_without_dot
 
 
-def audio_catog(ad_json, lyrics_dict, acceptance_threshold: float = 0.65):
+def audio_catog(ad_json, lyrics_dict, acceptance_threshold: float = 0.7):
+    """阈值设置为0.7是为了过滤掉所有可能识别错（《茉莉花》和《x花》、重复演唱的情况，如果允许容错则建议设置为0.65。"""
     audio_name = ad_json["key"]
     asr_text = gbkXfrFstLetter(ad_json["text"], 1)
     csv_dict = {}
@@ -45,7 +46,7 @@ def audio_catog(ad_json, lyrics_dict, acceptance_threshold: float = 0.65):
 
 
 def batch_audio_catog(scp_name: str):
-    rs_dict = funasr_run(song_name=scp_name, input_mode="scp")
+    rs_dict = funasr_run(scp_name=scp_name, input_mode="scp")
     audio_json_list = rs_dict["scp_rs"]
     lyrics_dict = extract_lyrics_contents(EIGEN_DIR)
     audio_catog_new = partial(audio_catog, lyrics_dict=lyrics_dict)
@@ -58,3 +59,4 @@ def batch_audio_catog(scp_name: str):
 
 if __name__ == "__main__":
     batch_audio_catog("all_audio")
+

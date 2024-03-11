@@ -21,7 +21,7 @@ def funasr_run(
     input_audio_dataset: str = None,
     input_audio_name: str = None,
     input_scp_dir: Path = SCP_DATA_DIR,
-    song_name: str = "guoge",
+    scp_name: str = "guoge",
     input_parsed_audio: np.ndarray = None,
     input_mode: str = "file",
     download_json_dir: Path = DOWNLOAD_DIR,
@@ -72,7 +72,7 @@ def funasr_run(
 
     else:
         """temp"""
-        json_name = song_name + ".json"
+        json_name = scp_name + ".json"
         download_path = download_json_dir / json_name
 
     if not download_path.exists():
@@ -89,7 +89,7 @@ def funasr_run(
         elif input_mode == "parsed":
             rs_list = model.generate(input=input_parsed_audio, batch_size_s=300)
         elif input_mode == "scp":
-            scp_name = song_name + ".scp"
+            scp_name = scp_name + ".scp"
             scp_path = str(input_scp_dir / scp_name)
             rs_list = model.generate(input=scp_path, bath_size_s=300)
         rs_dict = {"scp_rs": rs_list}
