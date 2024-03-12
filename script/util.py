@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import concurrent.futures
+# noinspection PyUnresolvedReferences
 import multiprocessing
 import psutil
 import csv
@@ -19,6 +20,17 @@ def multipuleProcess(
             if chunksize <= 1:
                 chunksize = 1
         result_list = list(executor.map(func_name, arg_list, chunksize=chunksize))
+
+    return result_list
+
+
+def multipuleThread(
+    func_name=None,
+    arg_list: list = None,
+    max_workers: int = psutil.cpu_count(logical=True),
+):
+    with concurrent.futures.ThreadPoolExecutor(max_workers) as executor:
+        result_list = list(executor.map(func_name, arg_list))
 
     return result_list
 
@@ -60,7 +72,8 @@ def gbkXfrFstLetter(gbk_str: str, style: int) -> str:
     'wdzg'
     """
     if style == 0:
-        return gbk_str
+        pattern = re.compile(r'[^\u4e00-\u9fa5]')
+        return pattern.sub('', gbk_str)
     elif style == 1:
         pinyin_list = lazy_pinyin(gbk_str)
         pinyin_result = " ".join("".join(inner_list) for inner_list in pinyin_list)

@@ -24,10 +24,6 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
-relative_path = str(ROOT / "script")
-absolute_path = os.path.abspath(relative_path)
-os.chdir(absolute_path)
-
 # data
 DATA_DIR = ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw_data"

@@ -12,7 +12,6 @@ from functools import partial
 import numpy as np
 import librosa
 import copy
-import pandas as pd
 
 
 def batch_funasr_run(
@@ -150,6 +149,8 @@ def main(
     scp_name="guoge",
     input_mode="scp",
 ):
+    sampling_dict = tempCatSampling(input_audio_dataset)
+    getScpFile(sampling_dict)
     rs_dict_list = batch_funasr_run(
         input_audio_dataset=input_audio_dataset,
         scp_name=scp_name,
@@ -162,6 +163,4 @@ def main(
 
 
 if __name__ == "__main__":
-    sampling_dict = tempCatSampling("qilai")
-    getScpFile(sampling_dict)
     main("qilai", "qilai")
