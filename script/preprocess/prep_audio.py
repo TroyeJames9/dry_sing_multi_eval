@@ -14,9 +14,9 @@ import noisereduce as nr
 import librosa
 import soundfile as sf
 from glob import glob
-import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
+from pydub import AudioSegment
 
 
 # 音频数据由于设备不同，采样率也会不同，为方便研究，需统一采样率；
@@ -102,3 +102,38 @@ def noiseReduce(
     vt_sr = sr
 
     return vt_audio, vt_sr
+
+
+def cutAudio(
+    start_time=0.0, end_time=None, output_dir=None, input_audio=None
+):
+    """给定时间戳对音频进行切割
+
+    参数：
+        start_time(float):
+            切割的起始时间戳。
+        end_time(float):
+            切割的终点时间戳。
+        output_dir(Path):
+            音频文件输出目录的绝对路径。
+        output_audio(str):
+            音频文件输出名。
+        input_audio(Path):
+            待切割音频的绝对路径。
+
+    返回：
+        已切割的音频文件。
+
+    """
+    file_name = os.path.basename(input_audio)
+    output_path = output_dir / file_name
+    # print(f"Start download '{output_path}' ...")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    audio = AudioSegment.from_file(input_audio)
+    duration_s = len(audio)
+    if end_time is None:
+        end_time = duration_s
+    segment = audio[start_time: end_time]
+    segment.export(output_path, format="mp3")

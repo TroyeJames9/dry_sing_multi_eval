@@ -12,19 +12,18 @@ from functools import partial
 import numpy as np
 import librosa
 import copy
-import pandas as pd
 
 
 def batch_funasr_run(
     input_audio_dataset: str = None,
     input_audio_name: str = None,
-    song_name: str = None,
+    scp_name: str = None,
     input_mode: str = "file",
 ):
     rs_dict = funasr_run(
         input_audio_dataset=input_audio_dataset,
         input_audio_name=input_audio_name,
-        song_name=song_name,
+        scp_name=scp_name,
         input_mode=input_mode,
     )
     rs_dict_list = rs_dict["scp_rs"]
@@ -147,12 +146,14 @@ def calDtwFreqAndTempo_V2():
 
 def main(
     input_audio_dataset="guoge",
-    song_name="guoge",
+    scp_name="guoge",
     input_mode="scp",
 ):
+    sampling_dict = tempCatSampling(input_audio_dataset)
+    getScpFile(sampling_dict)
     rs_dict_list = batch_funasr_run(
         input_audio_dataset=input_audio_dataset,
-        song_name=song_name,
+        scp_name=scp_name,
         input_mode=input_mode,
     )
     getSongFeat_new = partial(getSongFeat, input_audio_dataset=input_audio_dataset)
@@ -162,6 +163,4 @@ def main(
 
 
 if __name__ == "__main__":
-    sampling_dict = tempCatSampling("qilai")
-    getScpFile(sampling_dict)
     main("qilai", "qilai")
