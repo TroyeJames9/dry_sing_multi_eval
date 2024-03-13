@@ -5,7 +5,7 @@ import glob
 import time
 import concurrent.futures
 import asyncio
-from preprocess.lfasr_new import (
+from preprocess.temp_lfasr_new import (
     downloadOrderResult,
     getTransferResult,
     getCutPoint,
