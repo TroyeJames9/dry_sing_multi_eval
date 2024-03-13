@@ -32,7 +32,7 @@ def audioSampling(
     """
     csv_file_path = csv_dir / csv_name
     df = pd.read_csv(csv_file_path, encoding="gbk", engine="python")
-
+    
     # 构造一个正则表达式，用于匹配列表中的所有曲目名称
     # 使用case=False忽略大小写，na=False处理缺失值
     combined_regex = "|".join(song_names)
@@ -86,6 +86,7 @@ def extractAllAudio(input_audio_dataset: str, input_dir: Path = UPLOAD_FILE_DIR)
         for filename in os.listdir(folder_path)  # 遍历目录中的所有文件名
     ]
 
+    # 返回包含所有音频文件路径的字典
     return sampling_dict
 
 
