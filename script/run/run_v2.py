@@ -149,7 +149,7 @@ def main(
     scp_name="guoge",
     input_mode="scp",
 ):
-    sampling_dict = tempCatSampling(input_audio_dataset)
+    sampling_dict = extractAllAudio(input_audio_dataset=input_audio_dataset)
     getScpFile(sampling_dict)
     rs_dict_list = batch_funasr_run(
         input_audio_dataset=input_audio_dataset,
