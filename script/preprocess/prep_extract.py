@@ -30,13 +30,9 @@ def audioSampling(
     - sampled_tracks: dict，结构为{<曲目名称1>: [文件名1, 文件名2, ...],
                                      <曲目名称2>: [文件名1, 文件名2, ...]}
     """
-
-    # 构造CSV文件的完整路径
     csv_file_path = csv_dir / csv_name
-
-    # 使用pandas读取CSV文件，指定编码为gbk以处理中文，使用python引擎
     df = pd.read_csv(csv_file_path, encoding="gbk", engine="python")
-
+    
     # 构造一个正则表达式，用于匹配列表中的所有曲目名称
     # 使用case=False忽略大小写，na=False处理缺失值
     combined_regex = "|".join(song_names)
@@ -59,13 +55,11 @@ def audioSampling(
         grouped_by_song[track] = file_names
 
     # 对每个曲目的文件列表进行随机抽样，数量不足时取全部
-    # 使用字典推导式，对每个曲目名称，随机选择min(len(files), max_samples)个文件名
     sampled_tracks = {
         track: random.sample(files, min(len(files), max_samples))
         for track, files in grouped_by_song.items()
     }
 
-    # 返回包含随机抽样文件名的字典
     return sampled_tracks
 
 
@@ -84,11 +78,9 @@ def extractAllAudio(input_audio_dataset: str, input_dir: Path = UPLOAD_FILE_DIR)
     # 初始化一个空字典，用于存储文件路径
     sampling_dict = {}
 
-    # 构造数据集目录的完整路径
     folder_path = input_dir / input_audio_dataset
 
     # 使用列表推导式遍历目录中的所有文件，并获取它们的绝对路径
-    # 注意：这里假设所有的文件都是音频文件，没有进一步的检查
     sampling_dict[input_audio_dataset] = [
         os.path.abspath(os.path.join(folder_path, filename))  # 获取每个文件的绝对路径
         for filename in os.listdir(folder_path)  # 遍历目录中的所有文件名
@@ -113,9 +105,9 @@ def getScpFile(sampling_dict: dict, scp_dir: Path = SCP_DATA_DIR):
     返回:
     - 无返回值，直接写入scp文件
     """
-    # 遍历字典中的每个键（歌曲名称）
+    # 遍历字典中的每个键（数据集名称）
     for song_name in sampling_dict.keys():
-        files_list = sampling_dict[song_name]  # 获取对应歌曲的文件路径列表
+        files_list = sampling_dict[song_name]  # 获取对应数据集的文件路径列表
         scp_dict = {}  # 初始化一个新的字典用于scp文件内容
 
         # 遍历歌曲的文件路径列表
