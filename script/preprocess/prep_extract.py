@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
 
+"""本模块主要从文件歌曲表提取曲目对应的文件列表作为数据集，或者直接从数据集目录提取所有文件生成scp文件作为数据集。
+
+经典的使用案例：
+    1) 生成的scp文件可用于funASR识别
+    sampling_dict = extractAllAudio(input_audio_dataset="qilai")
+    getScpFile(sampling_dict)
+
+    2) 结果可用于从funASR识别结果的json文件提取对应的音频信息
+    sample_dict = audioSampling(song_names=["guoge", "molihua"], max_samples=1000)
+"""
+
 import pandas as pd
 from pathlib import Path
 import logging
@@ -32,7 +43,7 @@ def audioSampling(
     """
     csv_file_path = csv_dir / csv_name
     df = pd.read_csv(csv_file_path, encoding="gbk", engine="python")
-    
+
     # 构造一个正则表达式，用于匹配列表中的所有曲目名称
     # 使用case=False忽略大小写，na=False处理缺失值
     combined_regex = "|".join(song_names)
@@ -69,7 +80,7 @@ def extractAllAudio(input_audio_dataset: str, input_dir: Path = UPLOAD_FILE_DIR)
 
     参数:
     - input_audio_dataset: str，要提取文件的数据集目录名称
-    - input_dir: Path，数据集的父目录，默认为UPLOAD_FILE_DIR（需要在代码其他部分定义）
+    - input_dir: Path，数据集的父目录，默认为UPLOAD_FILE_DIR（setting.py定义）
 
     返回:
     - sampling_dict: dict，结构为{<数据集名称>: [音频文件路径1, 音频文件路径2, ...]}
