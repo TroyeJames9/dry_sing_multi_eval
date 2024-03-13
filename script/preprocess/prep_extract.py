@@ -97,6 +97,7 @@ def extractAllAudio(input_audio_dataset: str, input_dir: Path = UPLOAD_FILE_DIR)
         for filename in os.listdir(folder_path)  # 遍历目录中的所有文件名
     ]
 
+    # 返回包含所有音频文件路径的字典
     return sampling_dict
 
 
