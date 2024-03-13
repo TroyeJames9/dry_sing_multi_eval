@@ -21,12 +21,23 @@ def funasr_run(
     input_audio_dataset: str = None,
     input_audio_name: str = None,
     input_scp_dir: Path = SCP_DATA_DIR,
-    scp_name: str = "guoge",
-    input_parsed_audio: np.ndarray = None,
+    scp_name: str = None,
     input_mode: str = "file",
     download_json_dir: Path = DOWNLOAD_DIR,
 ) -> dict:
     """使用funasr进行ASR（语音识别）,输出识别文字以及每个字的时间戳
+
+    允许传入两种模式的数据
+    1、如果传入单个音频文件，则需传入input_audio_dataset和input_audio_name。
+    2、如果传入scp文件，则需传入scp_name并input_mode取值为scp。
+    输出的格式均为字典，结构如下：{
+                            "scp_rs": [
+                                {"key": file_name, "text": asr_result, "timestamp": [[start,end],[start,end], ...]},{},
+                                {"key": file_name, "text": asr_result, "timestamp": [[start,end],[start,end], ...]},{},
+                                ...
+                                ]
+                            }
+
 
     参数：
         model(str):
@@ -41,24 +52,19 @@ def funasr_run(
             待识别音频所处的数据集名称
         input_audio_name(str):
             音频文件名（带后缀）
-        input_parsed_audio(np.ndarray):
-            已解析的audio信号序列
+        input_scp_dir (Path):
+            SCP文件所在目录。默认为SCP_DATA_DIR
+        scp_name (str):
+            SCP文件名称。
         input_mode(str):
             输入的形式，包括：
                 file：输入音频文件
-                parsed：输入已解析的audio信号序列
+                scp：输入scp文件
         download_json_dir(Path):
             输出结果保存为json的爷目录，默认为DOWNLOAD_DIR
 
-    返回：
-        rs_dict(dict):
-            只有一个元素的列表，元素为字典，结构如下：
-                key（str）:
-                    随机种子
-                text（str）:
-                    识别文本
-                timestamp(list):
-                    识别文本每个字的时间戳
+    返回：字典，结构如描述所见
+
     """
     if input_audio_name is not None:
         path_str = str(input_audio_dir / input_audio_dataset / input_audio_name)
@@ -71,7 +77,6 @@ def funasr_run(
         download_path = download_dir / json_name
 
     else:
-        """temp"""
         json_name = scp_name + ".json"
         download_path = download_json_dir / json_name
 
@@ -86,12 +91,10 @@ def funasr_run(
         )
         if input_mode == "file":
             rs_list = model.generate(input=path_str, batch_size_s=300)
-        elif input_mode == "parsed":
-            rs_list = model.generate(input=input_parsed_audio, batch_size_s=300)
         elif input_mode == "scp":
             scp_name = scp_name + ".scp"
             scp_path = str(input_scp_dir / scp_name)
-            rs_list = model.generate(input=scp_path, bath_size_s=300)
+            rs_list = model.generate(input=scp_path, batch_size_s=300)
         rs_dict = {"scp_rs": rs_list}
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(rs_dict, json_file, indent=2, ensure_ascii=False)

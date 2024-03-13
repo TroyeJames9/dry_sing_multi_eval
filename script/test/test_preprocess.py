@@ -5,8 +5,8 @@ import librosa
 from setting import *
 from preprocess.prep_audio import *
 from preprocess.prep_notation import *
-from preprocess.lfasr_new import *
-from preprocess.audio_eigen import *
+from preprocess.temp_lfasr_new import *
+from preprocess.temp_audio_eigen import *
 
 
 class TestPrepExtract(unittest.TestCase):
