@@ -1,0 +1,116 @@
+{
+  "eigen_list": [
+    {
+      "word": "起来",
+      "eigen": {
+        "start_time": 13.000,
+        "end_time": 14.390
+      }
+    },
+    {
+      "word": "不愿",
+      "eigen": {
+        "start_time": 14.400,
+        "end_time": 15.270
+      }
+    },
+    {
+      "word": "做",
+      "eigen": {
+        "start_time": 15.280,
+        "end_time": 15.390
+      }
+    },
+    {
+      "word": "奴隶",
+      "eigen": {
+        "start_time": 15.400,
+        "end_time": 15.950
+      }
+    },
+    {
+      "word": "的",
+      "eigen": {
+        "start_time": 15.960,
+        "end_time": 16.070
+      }
+    },
+    {
+      "word": "人们",
+      "eigen": {
+        "start_time": 16.080,
+        "end_time": 17.470
+      }
+    },
+    {
+      "word": "把",
+      "eigen": {
+        "start_time": 17.940,
+        "end_time": 18.210
+      }
+    },
+    {
+      "word": "我们",
+      "eigen": {
+        "start_time": 18.220,
+        "end_time": 18.730
+      }
+    },
+    {
+      "word": "的",
+      "eigen": {
+        "start_time": 18.740,
+        "end_time": 18.890
+      }
+    },
+    {
+      "word": "血肉",
+      "eigen": {
+        "start_time": 18.900,
+        "end_time": 20.370
+      }
+    },
+    {
+      "word": "筑",
+      "eigen": {
+        "start_time": 20.380,
+        "end_time": 20.810
+      }
+    },
+    {
+      "word": "成",
+      "eigen": {
+        "start_time": 20.820,
+        "end_time": 21.010
+      }
+    },
+    {
+      "word": "我们",
+      "eigen": {
+        "start_time": 21.020,
+        "end_time": 21.650
+      }
+    },
+    {
+      "word": "新",
+      "eigen": {
+        "start_time": 21.660,
+        "end_time": 22.210
+      }
+    },
+    {
+      "word": "的",
+      "eigen": {
+        "start_time": 22.220,
+        "end_time": 22.410
+      }
+    },
+    {
+      "word": "长城",
+      "eigen": {
+        "start_time": 22.420,
+        "end_time": 24.050
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 pass
 
 """
-
+import re
 from pathlib import Path
 from setting import *
 import numpy as np
@@ -14,73 +14,70 @@ from funasr import AutoModel
 
 
 def funasr_run(
-    model: str = "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch",
-    vad_model: str = "fsmn-vad",
-    punc_model: str = "ct-punc-c",
-    input_audio_dir: Path = UPLOAD_FILE_DIR,
-    input_audio_dataset: str = None,
-    input_audio_name: str = None,
-    input_scp_dir: Path = SCP_DATA_DIR,
-    scp_name: str = None,
-    input_mode: str = "file",
-    download_json_dir: Path = DOWNLOAD_DIR,
+        model: str = "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch",  # 默认使用的ASR模型路径
+        vad_model: str = "fsmn-vad",  # 默认使用的语音活动检测模型
+        punc_model: str = "ct-punc-c",  # 默认使用的标点插入模型
+        input_audio_dir: Path = UPLOAD_FILE_DIR,  # 输入音频文件所在的父目录，默认上传文件目录
+        input_audio_dataset: str = None,  # 待识别音频所属的数据集名称
+        input_audio_name: str = None,  # 待识别的音频文件名（含后缀）
+        input_scp_dir: Path = SCP_DATA_DIR,  # SCP文件所在的目录，默认SCP数据目录
+        scp_name: str = None,  # SCP文件名
+        input_mode: str = "file",  # 输入数据模式，可选："file"（单个音频文件）或"scp"（SCP文件）
+        download_json_dir: Path = DOWNLOAD_DIR,  # 输出结果JSON文件保存的父目录，默认下载目录
 ) -> dict:
-    """使用funasr进行ASR（语音识别）,输出识别文字以及每个字的时间戳
+    """
+    使用funasr进行ASR（语音识别），输出识别文字以及每个字的时间戳。
 
-    允许传入两种模式的数据
-    1、如果传入单个音频文件，则需传入input_audio_dataset和input_audio_name。
-    2、如果传入scp文件，则需传入scp_name并input_mode取值为scp。
-    输出的格式均为字典，结构如下：{
-                            "scp_rs": [
-                                {"key": file_name, "text": asr_result, "timestamp": [[start,end],[start,end], ...]},{},
-                                {"key": file_name, "text": asr_result, "timestamp": [[start,end],[start,end], ...]},{},
-                                ...
-                                ]
-                            }
+    支持两种数据输入方式：
+    1. 单个音频文件时，需要提供input_audio_dataset和input_audio_name参数。
+    2. SCP文件时，需提供scp_name参数并将input_mode设置为"scp"。
 
+    输出结果是一个字典，结构示例：
+    {
+        "scp_rs": [
+            {"key": file_name, "text": asr_result, "timestamp": [[start,end],[start,end], ...]},
+            {"key": file_name, "text": asr_result, "timestamp": [[start,end],[start,end], ...]},
+            ...
+        ]
+    }
 
     参数：
-        model(str):
-            选用的模型，默认为"iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch"，如何选择模型详见达摩院Paraformer large
-        vad_model(str):
-            语音活动检测选用的模型，默认为fsmn-vad
-        punc_model(str):
-            标点检测选用的模型，默认为ct-punc-c
-        input_audio_dir(Path):
-            待识别音频所处的爷目录，默认为UPLOAD_FILE_DIR
-        input_audio_dataset(str):
-            待识别音频所处的数据集名称
-        input_audio_name(str):
-            音频文件名（带后缀）
-        input_scp_dir (Path):
-            SCP文件所在目录。默认为SCP_DATA_DIR
-        scp_name (str):
-            SCP文件名称。
-        input_mode(str):
-            输入的形式，包括：
-                file：输入音频文件
-                scp：输入scp文件
-        download_json_dir(Path):
-            输出结果保存为json的爷目录，默认为DOWNLOAD_DIR
+        model (str): ASR模型路径，更多模型选择参考达摩院Paraformer large
+        vad_model (str): 语音活动检测模型名称
+        punc_model (str): 标点插入模型名称
+        input_audio_dir (Path): 输入音频文件的上级目录
+        input_audio_dataset (str): 音频文件所在的数据集名称
+        input_audio_name (str): 音频文件名（含扩展名）
+        input_scp_dir (Path): SCP文件所在的目录
+        scp_name (str): SCP文件名
+        input_mode (str): 输入模式，取值为 'file' 或 'scp'
+        download_json_dir (Path): 输出结果JSON文件保存的目录
 
-    返回：字典，结构如描述所见
-
+    返回值：符合上述结构的字典对象
     """
+    # 如果输入的是单个音频文件，构建音频文件完整路径
     if input_audio_name is not None:
         path_str = str(input_audio_dir / input_audio_dataset / input_audio_name)
         download_dir = download_json_dir / input_audio_dataset
+
+        # 创建输出结果保存目录（若不存在）
         if not download_dir.exists():
             download_dir.mkdir(parents=True)
 
+        # 提取音频文件名（不含扩展名），并构建JSON结果文件名
         real_audio_name = re.sub(r"\..*", "", input_audio_name)
         json_name = real_audio_name + ".json"
         download_path = download_dir / json_name
 
+    # 如果输入的是SCP文件，构建JSON结果文件名
     else:
         json_name = scp_name + ".json"
         download_path = download_json_dir / json_name
 
+    # 若结果文件尚未生成，则执行ASR识别过程
     if not download_path.exists():
+
+        # 初始化AutoModel，加载指定模型
         model = AutoModel(
             model=model,
             model_revision="v2.0.4",
@@ -89,15 +86,21 @@ def funasr_run(
             punc_model=punc_model,
             punc_model_revision="v2.0.4",
         )
+
+        # 根据输入模式分别调用模型进行识别
         if input_mode == "file":
             rs_list = model.generate(input=path_str, batch_size_s=300)
         elif input_mode == "scp":
             scp_name = scp_name + ".scp"
             scp_path = str(input_scp_dir / scp_name)
             rs_list = model.generate(input=scp_path, batch_size_s=300)
+
+        # 将识别结果封装成字典并写入JSON文件
         rs_dict = {"scp_rs": rs_list}
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(rs_dict, json_file, indent=2, ensure_ascii=False)
+
+    # 如果结果文件已存在，直接读取并返回结果
     else:
         with open(download_path, "r", encoding="gbk") as file:
             rs_dict = json.load(file)
@@ -106,49 +109,90 @@ def funasr_run(
 
 
 def getWordInfoList(funasr_dict: dict) -> dict:
-    """提供类似funasr_run输出结果的列表，生成一个eigen_list字典
+    """
+    根据funasr_run输出的结果生成一个名为'eigen_list'的字典列表，其中包含了每个字及其对应的开始时间和结束时间。
 
-    详细生成结果例子见ROOT / "orderResult_example"   / "getWordInfoList_result.json"
+    示例输出可见于：ROOT / "orderResult_example" / "getWordInfoList_result.json"
 
     参数：
         funasr_dict(dict)：
-            funasr_run输出结果形式的列表
+            包含ASR识别结果及其时间戳信息的字典，由funasr_run函数生成
 
     返回：
         eigen_dict(dict)：
-            结构如下：
-            eigen_list(list[dict])
-                    word(str):字
-                    eigen(dict)
-                        start_time(float)
-                        end_time(float)
-    """
-    text = funasr_dict["text"]
-    time = funasr_dict["timestamp"]
-    text = re.sub(r"[^\u4e00-\u9fa5\d]+", "", text)
+            结构定义如下：
+            eigen_list - 一个字典组成的列表
+                word(str)：单个汉字或英文字符
+                eigen(dict) - 字的时间戳信息
+                    start_time(float)：字的起始时间（单位：秒）
+                    end_time(float)：字的结束时间（单位：秒）
 
+    函数内部逻辑：
+    1. 获取原始识别文本及其时间戳数组
+    2. 清理文本，保留中文、英文字符及空格
+    3. 遍历清理后的文本，逐字构造新字典结构，并填充时间戳信息
+    """
+    # 获取funasr_dict中的识别文本和时间戳数组
+    text = funasr_dict["text"]
+    timestamps = funasr_dict["timestamp"]
+
+    # 正则表达式匹配规则：包含中文、英文字符和 中文、英文、空格结合。
+    """troyejames：由于发现有概率识别出来英文，所以同时要包含大小写英文以及空格"""
+    c_pattern = re.compile(r'[\u4e00-\u9fa5]')  # 中文字符正则
+    e_pattern = re.compile(r'[a-zA-Z]')  # 英文字符正则
+    pattern = re.compile(r"[^ \u4e00-\u9fa5a-zA-Z]+")  # 去除非中文、非英文、非空格字符
+    clean_text = pattern.sub("", text)  # 清理文本至仅包含有效字符
+
+    # 初始化返回的字典结构
     eigen_dict = {"eigen_list": []}
 
-    for i in range(len(text)):
+    j = 0
+    i = 0
+
+    # 遍历清理后的文本
+    while i <= len(clean_text) - 1:
+        # 初始化当前字的信息项
         eigen_dict_item = {"word": "", "eigen": {}}
         eigen = eigen_dict_item["eigen"]
 
-        eigen_dict_item["word"] = text[i]
-
-        eigen["start_time"] = round(time[i][0] / 1000, 3)
-        # 检验与下一个字之间的时间差，<2秒则意味着中间无明显间隔
-        if (i < len(text) - 1) and (time[i + 1][0] - time[i][1] <= 2000):
-            eigen["end_time"] = round(time[i + 1][0] / 1000, 3)
+        # 判断当前字符是否为中文或英文
+        if c_pattern.match(clean_text[i]):
+            eigen_dict_item["word"] = clean_text[i]
+        elif e_pattern.match(clean_text[i]):
+            # 对于英文单词，连续合并多个字母
+            eigen_dict_item["word"] = clean_text[i]
+            i += 1
+            while (i <= len(clean_text) - 1) and e_pattern.match(clean_text[i]):
+                eigen_dict_item["word"] = eigen_dict_item["word"] + clean_text[i]
+                i += 1
+            # 回退一位以便继续遍历
+            i -= 1
         else:
-            eigen["end_time"] = round(time[i][1] / 1000, 3)
+            # 跳过非中文非英文字符(比如空格）
+            i += 1
+            continue
 
+        # 设置当前字的起始时间
+        eigen["start_time"] = round(timestamps[j][0] / 1000, 3)
+
+        # 判断相邻字之间的时间间隔，如果小于2秒则将下一个时间区间的start_time作为本区间的结束时间
+        if (i < len(clean_text) - 1) and (timestamps[j + 1][0] - timestamps[j][1] <= 2000):
+            eigen["end_time"] = round(timestamps[j + 1][0] / 1000, 3)
+        else:
+            eigen["end_time"] = round(timestamps[j][1] / 1000, 3)
+
+        j += 1
+        i += 1
+
+        # 将当前字的时间戳信息添加到返回结果中
         eigen_dict["eigen_list"].append(eigen_dict_item)
 
     return eigen_dict
 
 
 if __name__ == "__main__":
-    rs_dict = funasr_run(input_audio_dataset="qilai", input_audio_name="cst.mp3")
     # rs_dict = funasr_run(song_name="guoge", input_mode="scp")
-    eigen_dict = getWordInfoList(funasr_dict=rs_dict)
+    rs_dict = funasr_run(input_audio_dataset="qilai", input_audio_name="cst.mp3")
+    rs_dict_list = rs_dict["scp_rs"][0]
+    eigen_dict = getWordInfoList(funasr_dict=rs_dict_list)
     print(eigen_dict)
