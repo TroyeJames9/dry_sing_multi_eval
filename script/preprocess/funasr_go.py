@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 
-"""pass
+"""
+本模块是基于FunASR库实现的自动语音识别（ASR）功能模块。模块包含的主要功能有：
 
-pass
+1. `funasrRun`：支持单个音频文件或SCP文件列表的语音识别，输出每个词语的时间戳信息，并以JSON格式保存识别结果。
+2. `getWordInfoList`：将`funasrRun`的输出结果转换成结构化的数据格式，提供每个词语及其对应的开始和结束时间信息。
+
+模块主要功能：
+- `funasrRun`：模块的主入口，用于执行语音识别操作。
+- `getWordInfoList`：处理`funasrRun`的输出结果，生成详细的词语信息列表。
+
+经典使用案例
+    rs_dict = funasrRun(input_audio_dataset="qilai", input_audio_name="cst.mp3")
+    rs_dict_list = rs_dict["scp_rs"][0]
+    eigen_dict = getWordInfoList(funasr_dict=rs_dict_list)
+    print(eigen_dict)
 
 """
 import re
@@ -13,7 +25,7 @@ import json
 from funasr import AutoModel
 
 
-def funasr_run(
+def funasrRun(
         model: str = "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch",  # 默认使用的ASR模型路径
         vad_model: str = "fsmn-vad",  # 默认使用的语音活动检测模型
         punc_model: str = "ct-punc-c",  # 默认使用的标点插入模型
@@ -192,7 +204,7 @@ def getWordInfoList(funasr_dict: dict) -> dict:
 
 if __name__ == "__main__":
     # rs_dict = funasr_run(song_name="guoge", input_mode="scp")
-    rs_dict = funasr_run(input_audio_dataset="qilai", input_audio_name="cst.mp3")
+    rs_dict = funasrRun(input_audio_dataset="qilai", input_audio_name="cst.mp3")
     rs_dict_list = rs_dict["scp_rs"][0]
     eigen_dict = getWordInfoList(funasr_dict=rs_dict_list)
     print(eigen_dict)

@@ -68,7 +68,7 @@ def audio_catog(ad_json, lyrics_dict, acceptance_threshold: float = 0.7):
 
 
 def batch_audio_catog(scp_name: str):
-    rs_dict = funasr_run(scp_name=scp_name, input_mode="scp")
+    rs_dict = funasrRun(scp_name=scp_name, input_mode="scp")
     audio_json_list = rs_dict["scp_rs"]
     lyrics_dict = extract_lyrics_contents(EIGEN_DIR)
     audio_catog_new = partial(audio_catog, lyrics_dict=lyrics_dict)
@@ -108,7 +108,7 @@ def batch_audio_seg(
     csv_dict = csv_pd.to_dict("records")
     lyrics_dict = extract_lyrics_contents(lyrics_dir, style=2)
 
-    rs_dict = funasr_run(scp_name=scp_name, input_mode="scp")
+    rs_dict = funasrRun(scp_name=scp_name, input_mode="scp")
     audio_json_list = rs_dict["scp_rs"]
     dict_indexed = {
         d["key"]: {"text": d["text"], "timestamp": d["timestamp"]}

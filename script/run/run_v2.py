@@ -20,12 +20,8 @@ def batch_funasr_run(
     scp_name: str = None,
     input_mode: str = "file",
 ):
-    rs_dict = funasr_run(
-        input_audio_dataset=input_audio_dataset,
-        input_audio_name=input_audio_name,
-        scp_name=scp_name,
-        input_mode=input_mode,
-    )
+    rs_dict = funasrRun(input_audio_dataset=input_audio_dataset, input_audio_name=input_audio_name, scp_name=scp_name,
+                        input_mode=input_mode)
     rs_dict_list = rs_dict["scp_rs"]
 
     return rs_dict_list
