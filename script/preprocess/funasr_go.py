@@ -16,6 +16,9 @@
     eigen_dict = getWordInfoList(funasr_dict=rs_dict_list)
     print(eigen_dict)
 
+本模块所使用的funASR算法相关资料：
+    https://www.modelscope.cn/models/iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch/summary
+
 """
 import re
 from pathlib import Path
