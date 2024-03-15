@@ -20,12 +20,30 @@
     https://www.modelscope.cn/models/iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch/summary
 
 """
+import io
+import sys
+from contextlib import contextmanager
+
+
+@contextmanager
+def suppress_stdout_stderr():
+    new_stdout, new_stderr = io.StringIO(), io.StringIO()
+    old_stdout, old_stderr = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = new_stdout, new_stderr
+        yield None  # 这里是被抑制输出的代码块
+    finally:
+        sys.stdout, sys.stderr = old_stdout, old_stderr
+
+
+# 使用上下文管理器抑制funasr模块导入时的print输出
+with suppress_stdout_stderr():
+    from funasr import AutoModel  # 导入模块时的print语句会被抑制
 import re
 from pathlib import Path
 from setting import *
 import numpy as np
 import json
-from funasr import AutoModel
 
 
 def funasrRun(
