@@ -15,7 +15,7 @@ from preprocess.temp_lfasr_new import (
     gbkXfrFstLetter,
     getPerWordTime,
 )
-from score.articulation_analysis import calculate_cosine_similarity, kmeanCatogery
+from score.temp_articulation_analysis import calculate_cosine_similarity, kmeanCatogery
 from setting import (
     LFASR_APP_ID,
     LFASR_SECRETKEY,

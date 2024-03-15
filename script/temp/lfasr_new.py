@@ -21,7 +21,7 @@ import doctest
 from pathlib import Path
 from pydub import AudioSegment
 from pypinyin import pinyin, lazy_pinyin, Style
-from score.articulation_analysis import calculate_cosine_similarity
+from score.temp_articulation_analysis import calculate_cosine_similarity
 
 lfasr_host = 'https://raasr.xfyun.cn/v2/api'
 # 请求的接口名
