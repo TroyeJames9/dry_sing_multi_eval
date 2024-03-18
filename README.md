@@ -55,10 +55,11 @@ Five-Dimensional Acapella Singing Evaluation System based on funASR, include pro
 2. **Package Dependencies:** You can find the list of required packages in the requirements.txt file. Run `pip install -r requirements.txt` in terminal Located in the project root directory to install.Please note that this project also requires manual installation of the required versions of PyTorch as specified in the requirements.txt file. The default version is 1.8.2, and the version should not be greater than or equal to 2.x.x.
 3. **Development Environment:** Set up your development environment with your preferred code editor or IDE. However, some imports in this project rely on the "source root" setting in PyCharm. It is recommended to use PyCharm for optimal functionality.In PyCharm, it is necessary to set `dry_sing_multi_eval/script` as the source root to ensure that the scripts run correctly.
 4. **Access to Resources:** Due to the sensitive nature of the audio dataset used in this project, it cannot be publicly disclosed.samples in the `audio/qilai` are provided.If you intend to use this project with publicly available datasets, please ensure that the format of the input data matches the requirements of the scoring system. The required format for input data is as follows (TODO).
+5. **Additional Dependencies:** This project utilizes pydub, thus requiring the installation of ffmpeg as well. It is recommended to install a version of ffmpeg that is newer than the December 21st, 2023 release.
 
 ###### **Usage**
 
-1. To verify that the development environment is properly configured and to understand the design philosophy of this project, you can run `funasr_run_single` in Jupyter Lab. This script is designed to demonstrate the functionality of the system and provide insights into its design principles.
+1. To verify that the development environment is properly configured and to understand the design philosophy of this project, you can run `get_start.ipynb` in Jupyter Lab. This script is designed to demonstrate the functionality of the system and provide insights into its design principles.
 2. TODO
 
 ### Directory structure

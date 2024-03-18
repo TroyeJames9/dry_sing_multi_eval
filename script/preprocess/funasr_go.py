@@ -225,7 +225,7 @@ def getWordInfoList(funasr_dict: dict) -> dict:
 
 if __name__ == "__main__":
     # rs_dict = funasr_run(song_name="guoge", input_mode="scp")
-    rs_dict = funasrRun(input_audio_dataset="qilai", input_audio_name="cst.mp3")
+    rs_dict = funasrRun(input_audio_dataset="qilai", input_audio_name="qilai.wav")
     rs_dict_list = rs_dict["scp_rs"][0]
     eigen_dict = getWordInfoList(funasr_dict=rs_dict_list)
     print(eigen_dict)
