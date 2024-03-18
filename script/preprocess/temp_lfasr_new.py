@@ -364,7 +364,6 @@ def getHotWords(lyrics_dir: Path, file_name: str) -> str:
     return result
 
 
-# TODO: 仍然受限于容错率问题，需要考虑使用编辑距离来编写一个新的索引函数。（也可以在findSubstringIndex函数基础上进行改版）
 def findSubstringIndex(
     full_str: str, lyrics: str, threshold=0.6, is_end=False, match_str_size=20
 ) -> int:
@@ -413,7 +412,6 @@ def findSubstringIndex(
     )
 
 
-# TODO: 仍然受限于容错率问题，需要考虑使用编辑距离来编写一个新的索引函数。（也可以在findSubstringIndex函数进行改版）
 def getCutPoint(lyrics_dir, w_str_result, file_name, threshold, match_str_size=20):
     # lyrics = extractLyrics(
     #     lyrics_dir=lyrics_dir,

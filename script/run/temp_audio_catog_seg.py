@@ -176,7 +176,7 @@ def audio_seg(csv_dict, lyrics_dict, ad_dict, time_offset=150, scp_name=None):
     参数:
     csv_dict (dict): 包含音频文件基本信息的字典
     lyrics_dict (dict): 存储了歌曲名与歌词内容映射关系的字典
-    ad_dict (dict): 存储了广告信息的字典，其中键是音频文件名，值包含广告文本等信息
+    ad_dict (dict): 存储了识别结果信息的字典，其中键是音频文件名，值包含识别文本等信息
     time_offset (int): 默认为150毫秒的时间偏移量，用于提前或延后剪辑起点
     scp_name (str): 可选参数，指明scp文件名，用于定位上传的原始音频文件路径
     """
