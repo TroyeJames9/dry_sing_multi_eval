@@ -132,9 +132,10 @@ def funasrRun(
         rs_dict = {"scp_rs": rs_list}
         with open(download_path, "w", encoding="gbk") as json_file:
             json.dump(rs_dict, json_file, indent=2, ensure_ascii=False)
-
+        print(f"funasrRun: funASR recognition result has been written in {download_path}")
     # 如果结果文件已存在，直接读取并返回结果
     else:
+        print(f"funasrRun: {download_path} already exists,read ASR recognition results from there")
         with open(download_path, "r", encoding="gbk") as file:
             rs_dict = json.load(file)
 

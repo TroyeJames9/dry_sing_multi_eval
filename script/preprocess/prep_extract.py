@@ -70,6 +70,7 @@ def audioSampling(
         track: random.sample(files, min(len(files), max_samples))
         for track, files in grouped_by_song.items()
     }
+    print("audioSampling: The sampling of the specified audio data set is completed, the extracted tracks include '", song_names, "',the sample size is", max_samples)
 
     return sampled_tracks
 
@@ -96,7 +97,7 @@ def extractAllAudio(input_audio_dataset: str, input_dir: Path = UPLOAD_FILE_DIR)
         os.path.abspath(os.path.join(folder_path, filename))  # 获取每个文件的绝对路径
         for filename in os.listdir(folder_path)  # 遍历目录中的所有文件名
     ]
-
+    print("extractAllAudio: Extract all audio file paths from the dataset", input_audio_dataset)
     # 返回包含所有音频文件路径的字典
     return sampling_dict
 
@@ -143,7 +144,7 @@ def getScpFile(sampling_dict: dict, scp_dir: Path = SCP_DATA_DIR):
                 value = value.replace("\\", "/")
                 # 写入scp文件，格式为"key value"
                 f.write(f"{key} {value}\n")
-
+    print("getScpFile: Store dataset into ", scp_path)
     # 函数没有返回值，因为结果已经写入到了scp文件中
     # 注：如果需要返回scp_dict，可以添加 return scp_dict
 

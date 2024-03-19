@@ -108,12 +108,11 @@ def writeCsv(write_dict_list: list, csv_dir: Path, csv_name: str, overwrite: boo
     fieldnames = write_dict_list[0].keys()
     csv_file_path = csv_dir / csv_name
 
-    if overwrite and os.path.isfile(csv_file_path):
+    if overwrite and os.path.exists(csv_file_path):
         # 如果overwrite为True且文件存在，则先删除原有的CSV文件
         os.remove(csv_file_path)
 
-    # 根据overwrite参数确定打开文件的方式
-    mode = "w" if overwrite else "a"
+    mode = "a" if os.path.exists(csv_file_path) else "w"
     with open(csv_file_path, mode=mode, newline="") as file:
         writer = csv.DictWriter(file, fieldnames=list(fieldnames))
 
