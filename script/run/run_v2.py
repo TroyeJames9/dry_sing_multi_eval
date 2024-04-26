@@ -219,7 +219,7 @@ def calDtwFreqAndTempo_V2():
     """
 
 
-def main(input_audio_dataset="guoge", scp_name="guoge", input_mode="scp"):
+def main(input_audio_dataset="guoge", scp_name="guoge", song_name="guoge", input_mode="scp"):
     """
     主函数：用于执行整个音频处理+绝对度量流程，主要包括音频采样、生成SCP文件、ASR批量识别、提取音频特征、提取乐谱特征以及计算DTW，
     目前计算的维度包括音准与节奏节拍
@@ -251,7 +251,7 @@ def main(input_audio_dataset="guoge", scp_name="guoge", input_mode="scp"):
     )
     getSongFeat_new = partial(getSongFeat, input_audio_dataset=input_audio_dataset)
     song_feat_list = multipuleProcess(getSongFeat_new, rs_dict_list)
-    notation_feat_dict = getSheetMusicFeatDict()
+    notation_feat_dict = getSheetMusicFeatDict(json_name=song_name)
     calDtwFreqAndTempo(notation_feat_dict, song_feat_list)
 
 
