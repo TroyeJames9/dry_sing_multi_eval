@@ -1,0 +1,624 @@
+{
+    "bpm": 78,
+    "key_signature": "Db",
+    "time_signature": [4, 4],
+    "eigen_list": [
+      {
+        "word": "你",
+        "eigen": {
+          "note": ["-5"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "问",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "爱",
+        "eigen": {
+          "note": ["5"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "你",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "有",
+        "eigen": {
+          "note": ["-7"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "多",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "深",
+        "eigen": {
+          "note": ["5"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["5"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "爱",
+        "eigen": {
+          "note": ["6"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "你",
+        "eigen": {
+          "note": ["7"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "有",
+        "eigen": {
+          "note": ["+1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "几",
+        "eigen": {
+          "note": ["6"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "分",
+        "eigen": {
+          "note": ["5"],
+          "time": [4]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "情",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "也",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "真",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "爱",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "也",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "真",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "月",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "亮",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "代",
+        "eigen": {
+          "note": ["2"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "表",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["-6"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2","3"],
+          "time": [0.5,0.5]
+        }
+      },
+      {
+        "word": "心",
+        "eigen": {
+          "note": ["2"],
+          "time": [3]
+        }
+      },
+      {
+        "word": "你",
+        "eigen": {
+          "note": ["-5"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "问",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "爱",
+        "eigen": {
+          "note": ["5"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "你",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "有",
+        "eigen": {
+          "note": ["-7"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "多",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "深",
+        "eigen": {
+          "note": ["5"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["5"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "爱",
+        "eigen": {
+          "note": ["6"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "你",
+        "eigen": {
+          "note": ["7"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "有",
+        "eigen": {
+          "note": ["+1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "几",
+        "eigen": {
+          "note": ["6"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "分",
+        "eigen": {
+          "note": ["5"],
+          "time": [4]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "情",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "不",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "移",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "爱",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "不",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "变",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "月",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "亮",
+        "eigen": {
+          "note": ["3"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "代",
+        "eigen": {
+          "note": ["2"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "表",
+        "eigen": {
+          "note": ["-6"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["-7"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["1","2"],
+          "time": [0.5,0.5]
+        }
+      },
+      {
+        "word": "心",
+        "eigen": {
+          "note": ["1"],
+          "time": [3]
+        }
+      },
+      {
+        "word": "轻",
+        "eigen": {
+          "note": ["3","5"],
+          "time": [0.5,0.5]
+        }
+      },
+      {
+        "word": "轻",
+        "eigen": {
+          "note": ["3"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "一",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "个",
+        "eigen": {
+          "note": ["5"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "吻",
+        "eigen": {
+          "note": ["-7"],
+          "time": [3]
+        }
+      },
+      {
+        "word": "已",
+        "eigen": {
+          "note": ["-6"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "经",
+        "eigen": {
+          "note": ["-7"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "打",
+        "eigen": {
+          "note": ["-6"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "动",
+        "eigen": {
+          "note": ["-7"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["-6"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["-5"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "心",
+        "eigen": {
+          "note": ["3"],
+          "time": [3]
+        }
+      },
+      {
+        "word": "深",
+        "eigen": {
+          "note": ["5"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "深",
+        "eigen": {
+          "note": ["3"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "的",
+        "eigen": {
+          "note": ["2"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "一",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "段",
+        "eigen": {
+          "note": ["5"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "情",
+        "eigen": {
+          "note": ["-7"],
+          "time": [3]
+        }
+      },
+      {
+        "word": "叫",
+        "eigen": {
+          "note": ["-6"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "我",
+        "eigen": {
+          "note": ["-7"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "思",
+        "eigen": {
+          "note": ["1"],
+          "time": [1.5]
+        }
+      },
+      {
+        "word": "念",
+        "eigen": {
+          "note": ["1"],
+          "time": [0.5]
+        }
+      },
+      {
+        "word": "到",
+        "eigen": {
+          "note": ["1"],
+          "time": [1]
+        }
+      },
+      {
+        "word": "如",
+        "eigen": {
+          "note": ["2","3"],
+          "time": [0.5,0.5]
+        }
+      },
+      {
+        "word": "今",
+        "eigen": {
+          "note": ["2"],
+          "time": [3]
+        }
+      }
+    ]
+  
+  }
