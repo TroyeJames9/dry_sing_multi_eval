@@ -45,7 +45,7 @@ def extractJson(json_dir: Path = EIGEN_DIR, json_name: str = None):
 
     # 使用with语句打开文件，这样可以确保文件在使用后会被正确关闭
     # 打开文件时指定编码为gbk，以处理可能的中文或其他非ASCII字符
-    with open(json_filename, "r", encoding="gbk") as f:
+    with open(json_filename, "r", encoding="utf-8") as f:
         # 使用json模块的load方法将文件内容解析为字典
         data = json.load(f)
         eigen_dict = data
